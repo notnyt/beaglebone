@@ -88,8 +88,10 @@ module Beaglebone
 
         fd = Beaglebone::get_pin_status(pin_tx, :fd_uart)
 
-        fd.write(data)
+        ret = fd.write(data)
         fd.flush
+
+        ret
       end
 
       def run_once_on_each_line(callback, uart)
