@@ -329,8 +329,8 @@ module Beaglebone
       PWM::start(@pin, duty, frequency, polarity, run)
     end
 
-    def stop
-      PWM::stop(@pin)
+    def run
+      PWM::run(@pin)
     end
 
     def stop
