@@ -18,13 +18,12 @@ module Beaglebone #:nodoc:
 
       # Initialize a GPIO pin
       #
-      # == Attributes
-      # +pin+ should be a symbol representing the header pin
-      # +mode+ should specify the mode of the pin, either :IN or :OUT
+      # @param pin should be a symbol representing the header pin
+      # @param mode should specify the mode of the pin, either :IN or :OUT
       #
-      # == Examples
-      # GPIO.pin_mode(:P9_12, :OUT)
-      # GPIO.pin_mode(:P9_11, :IN)
+      # @example
+      #   GPIO.pin_mode(:P9_12, :OUT)
+      #   GPIO.pin_mode(:P9_11, :IN)
       def pin_mode(pin, mode)
 
         #make sure a valid mode was passed
@@ -63,13 +62,12 @@ module Beaglebone #:nodoc:
 
       # Sets a pin's output state
       #
-      # == Attributes
-      # +pin+ should be a symbol representing the header pin, i.e. :P9_12
-      # +state+ should be a symbol representin the state, :HIGH or :LOW
+      # @param pin should be a symbol representing the header pin
+      # @param state should be a symbol representin the state, :HIGH or :LOW
       #
-      # == Examples
-      # GPIO.digital_write(:P9_12, :HIGH)
-      # GPIO.digital_write(:P9_12, :LOW)
+      # @example
+      #   GPIO.digital_write(:P9_12, :HIGH)
+      #   GPIO.digital_write(:P9_12, :LOW)
       def digital_write(pin, state)
         check_valid_state(state)
         check_gpio_enabled(pin)
@@ -84,11 +82,12 @@ module Beaglebone #:nodoc:
 
       # Reads a pin's input state and return that value
       #
-      # == Attributes
-      # +pin+ should be a symbol representing the header pin, i.e. :P9_11
+      # @param pin should be a symbol representing the header pin, i.e. :P9_11
       #
-      # == Example
-      # GPIO.digital_read(:P9_11) => :HIGH
+      # @return [Symbol] :HIGH or :LOW
+      #
+      # @example
+      #   GPIO.digital_read(:P9_11) => :HIGH
       def digital_read(pin)
         check_gpio_enabled(pin)
 
@@ -104,15 +103,15 @@ module Beaglebone #:nodoc:
 
       # Runs a callback on an edge trigger event
       # This creates a new thread that runs in the background
-      # == Attributes
-      # +callback+ A method to call when the edge trigger is detected.
-      # This method should take 3 arguments, the pin, the edge, and the counter
-      # +pin+ should be a symbol representing the header pin, i.e. :P9_11
-      # +edge+ should be a symbol representing the trigger type, e.g. :RISING, :FALLING, :BOTH
-      # +timeout+ is optional and specifies a time window to wait
-      # +repeats+ is optional and specifies the number of times the callback will be run
-      # == Example
-      # GPIO.run_on_edge(lambda { |pin,edge,count| puts "[#{count}] #{pin} -- #{edge}" }, :P9_11, :RISING)
+      #
+      # @param callback A method to call when the edge trigger is detected.  This method should take 3 arguments, the pin, the edge, and the counter
+      # @param pin should be a symbol representing the header pin, i.e. :P9_11
+      # @param edge should be a symbol representing the trigger type, e.g. :RISING, :FALLING, :BOTH
+      # @param timeout is optional and specifies a time window to wait
+      # @param repeats is optional and specifies the number of times the callback will be run
+      #
+      # @example
+      #   GPIO.run_on_edge(lambda { |pin,edge,count| puts "[#{count}] #{pin} -- #{edge}" }, :P9_11, :RISING)
       def run_on_edge(callback, pin, edge, timeout = nil, repeats=nil)
 
         raise StandardError, "Already waiting for trigger on pin: #{pin}" if Beaglebone::get_pin_status(pin, :trigger)
@@ -142,14 +141,14 @@ module Beaglebone #:nodoc:
 
       # Runs a callback one time on an edge trigger event
       # this is a convenience method for run_on_edge
+      # @see #run_on_edge
       def run_once_on_edge(callback, pin, edge, timeout = nil)
         run_on_edge(callback, pin, edge, timeout, 1)
       end
 
       # Stops any threads waiting for data on specified pin
       #
-      # == Attributes
-      # +pin+ should be a symbol representing the header pin, i.e. :P9_11
+      # @param pin should be a symbol representing the header pin, i.e. :P9_11
       def stop_edge_wait(pin)
         thread = Beaglebone::get_pin_status(pin, :thread)
 
@@ -160,13 +159,15 @@ module Beaglebone #:nodoc:
       # Wait for an edge trigger
       # Returns the type that triggered the event, e.g. :RISING, :FALLING, :BOTH
       #
-      # == Attributes
-      # +pin+ should be a symbol representing the header pin, i.e. :P9_11
-      # +edge+ should be a symbol representing the trigger type, e.g. :RISING, :FALLING, :BOTH
-      # +timeout+ is optional and specifies a time window to wait
-      # +disable+ is optional.  If set, edge trigger detection is cleared on return
-      # == Example
-      # wait_for_edge(:P9_11, :RISING, 30) => :RISING
+      # @returns [Symbol] :RISING, :FALLING, or :BOTH
+      #
+      # @param pin should be a symbol representing the header pin, i.e. :P9_11
+      # @param edge should be a symbol representing the trigger type, e.g. :RISING, :FALLING, :BOTH
+      # @param timeout is optional and specifies a time window to wait
+      # @param disable is optional.  If set, edge trigger detection is cleared on return
+      #
+      # @example
+      #   wait_for_edge(:P9_11, :RISING, 30) => :RISING
       def wait_for_edge(pin, edge, timeout = nil, disable=true)
         check_valid_edge(edge)
         raise ArgumentError, "Cannot wait for edge trigger NONE: #{pin}" if edge.to_sym.upcase == :NONE
@@ -219,15 +220,14 @@ module Beaglebone #:nodoc:
 
       # Sends data to a shift register
       #
-      # == Attributes
-      # +latch_pin+ should be a symbol representing the header pin, i.e. :P9_12
-      # +clock_pin+ should be a symbol representing the header pin, i.e. :P9_12
-      # +data_pin+ should be a symbol representing the header pin, i.e. :P9_12
-      # +data+ Integer value to write to the shift register
-      # +lsb+ optional, send least significant bit first if set
+      # @param latch_pin should be a symbol representing the header pin, i.e. :P9_12
+      # @param clock_pin should be a symbol representing the header pin, i.e. :P9_12
+      # @param data_pin should be a symbol representing the header pin, i.e. :P9_12
+      # @param data Integer value to write to the shift register
+      # @param lsb optional, send least significant bit first if set
       #
-      # == Example
-      # GPIO.shift_out(:P9_11, :P9_12, :P9_13, 255)
+      # @example
+      #   GPIO.shift_out(:P9_11, :P9_12, :P9_13, 255)
       def shift_out(latch_pin, clock_pin, data_pin, data, lsb=nil)
         raise ArgumentError, "data must be > 0 (#{date}" if data < 0
         digital_write(latch_pin, :LOW)
@@ -247,6 +247,7 @@ module Beaglebone #:nodoc:
       end
 
       # Returns last known state from +pin+, reads state if unknown
+      # @returns [Symbol] :HIGH or :LOW
       def get_gpio_state(pin)
         check_gpio_enabled(pin)
 
@@ -256,7 +257,8 @@ module Beaglebone #:nodoc:
         digital_read(pin)
       end
 
-      # Returns mode from +pin, reads mode if unknown
+      # Returns mode from +pin+, reads mode if unknown
+      # @returns [Symbol] :IN or :OUT
       def get_gpio_mode(pin)
         check_gpio_enabled(pin)
 
@@ -268,13 +270,12 @@ module Beaglebone #:nodoc:
 
       # Set GPIO mode on an initialized pin
       #
-      # == Attributes
-      # +pin+ should be a symbol representing the header pin
-      # +mode+ should specify the mode of the pin, either :IN or :OUT
+      # @param pin should be a symbol representing the header pin
+      # @param mode should specify the mode of the pin, either :IN or :OUT
       #
-      # == Examples
-      # GPIO.set_gpio_mode(:P9_12, :OUT)
-      # GPIO.set_gpio_mode(:P9_11, :IN)
+      # @example
+      #   GPIO.set_gpio_mode(:P9_12, :OUT)
+      #   GPIO.set_gpio_mode(:P9_11, :IN)
       def set_gpio_mode(pin, mode)
         Beaglebone::check_valid_pin(pin, :gpio)
         check_valid_mode(mode)
@@ -286,13 +287,12 @@ module Beaglebone #:nodoc:
 
       # Set GPIO edge trigger type on an initialized pin
       #
-      # == Attributes
-      # +pin+ should be a symbol representing the header pin
-      # +edge+ should be a symbol representing the trigger type, e.g. :RISING, :FALLING, :BOTH
-      # +force+ is optional, if set will set the mode even if already set
+      # @param pin should be a symbol representing the header pin
+      # @param edge should be a symbol representing the trigger type, e.g. :RISING, :FALLING, :BOTH
+      # @param force is optional, if set will set the mode even if already set
       #
-      # == Examples
-      # GPIO.set_gpio_edge(:P9_11, :RISING)
+      # @example
+      #   GPIO.set_gpio_edge(:P9_11, :RISING)
       def set_gpio_edge(pin, edge, force=nil)
         check_valid_edge(edge)
         Beaglebone::check_valid_pin(pin, :gpio)
@@ -317,6 +317,7 @@ module Beaglebone #:nodoc:
       end
 
       # Returns the GPIO edge trigger type on an initialized pin
+      # @return [Symbol] :NONE, :RISING, :FALLING, or :BOTH
       def get_gpio_edge(pin)
         check_gpio_enabled(pin)
 
@@ -328,15 +329,17 @@ module Beaglebone #:nodoc:
 
       # Return an array of GPIO pins in use
       #
-      # == Example
-      # GPIO.get_gpio_pins => [:P9_12, :P9_13]
+      # @return [Array<Symbol>]
+      #
+      # @example
+      #   GPIO.get_gpio_pins => [:P9_12, :P9_13]
       def get_gpio_pins
         Beaglebone.pinstatus.clone.select { |x,y| x if y[:type] == :gpio && !PINS[x][:led] }.keys
       end
 
       # Disable a GPIO pin
-      # == Attributes
-      # +pin+ should be a symbol representing the header pin
+      #
+      # @param pin should be a symbol representing the header pin
       def disable_gpio_pin(pin)
 
         Beaglebone::check_valid_pin(pin, :gpio)
@@ -466,12 +469,13 @@ module Beaglebone #:nodoc:
     # Initialize a GPIO pin
     # Return's a GPIOPin object, setting the pin mode on initialization
     #
-    # == Attributes
-    # +mode+ should specify the mode of the pin, either :IN or :OUT
+    # @param mode should specify the mode of the pin, either :IN or :OUT
     #
-    # == Examples
-    # p9_12 = GPIOPin.new(:P9_12, :OUT)
-    # p9_11 = GPIOPin.new(:P9_11, :IN)
+    # @return [GPIOPin]
+    #
+    # @example
+    #   p9_12 = GPIOPin.new(:P9_12, :OUT)
+    #   p9_11 = GPIOPin.new(:P9_11, :IN)
     def initialize(pin, mode)
       @pin = pin
 
@@ -480,43 +484,45 @@ module Beaglebone #:nodoc:
 
     # Sets a pin's output state
     #
-    # == Attributes
-    # +state+ should be a symbol representin the state, :HIGH or :LOW
+    # @param state should be a symbol representin the state, :HIGH or :LOW
     #
-    # == Example
-    # p9_12 = GPIOPin.new(:P9_12, :OUT)
-    # p9_12.digital_write(:HIGH)
-    # p9_12.digital_write(:LOW)
+    # @example
+    #   p9_12 = GPIOPin.new(:P9_12, :OUT)
+    #   p9_12.digital_write(:HIGH)
+    #   p9_12.digital_write(:LOW)
     def digital_write(state)
       GPIO::digital_write(@pin, state)
     end
 
     # Reads a pin's input state and return that value
     #
-    # == Example
-    # p9_11 = GPIOPin.new(:P9_12, :OUT)
-    # p9_11.digital_read => :HIGH
+    # @return [Symbol] :HIGH or :LOW
+    #
+    # @example
+    #   p9_11 = GPIOPin.new(:P9_12, :OUT)
+    #   p9_11.digital_read => :HIGH
     def digital_read
       GPIO::digital_read(@pin)
     end
 
     # Runs a callback on an edge trigger event
     # This creates a new thread that runs in the background
-    # == Attributes
-    # +callback+ A method to call when the edge trigger is detected.
-    # This method should take 3 arguments, the pin, the edge, and the counter
-    # +edge+ should be a symbol representing the trigger type, e.g. :RISING, :FALLING, :BOTH
-    # +timeout+ is optional and specifies a time window to wait
-    # +repeats+ is optional and specifies the number of times the callback will be run
-    # == Example
-    # p9_11 = GPIOPin.new(:P9_11, :IN)
-    # p9_11.run_on_edge(lambda { |pin,edge,count| puts "[#{count}] #{pin} -- #{edge}" }, :P9_11, :RISING)    def run_on_edge(callback, edge, timeout=nil, repeats=nil)
+    #
+    # @param callback A method to call when the edge trigger is detected.  This method should take 3 arguments, the pin, the edge, and the counter
+    # @param edge should be a symbol representing the trigger type, e.g. :RISING, :FALLING, :BOTH
+    # @param timeout is optional and specifies a time window to wait
+    # @param repeats is optional and specifies the number of times the callback will be run
+    #
+    # @example
+    #   p9_11 = GPIOPin.new(:P9_11, :IN)
+    #   p9_11.run_on_edge(lambda { |pin,edge,count| puts "[#{count}] #{pin} -- #{edge}" }, :P9_11, :RISING)    def run_on_edge(callback, edge, timeout=nil, repeats=nil)
     def run_on_edge(callback, edge, timeout=nil, repeats=nil)
       GPIO::run_on_edge(callback, @pin, edge, timeout, repeats)
     end
 
     # Runs a callback one time on an edge trigger event
     # this is a convenience method for run_on_edge
+    # @see #run_on_edge
     def run_once_on_edge(callback, edge, timeout=nil)
       GPIO::run_once_on_edge(callback, @pin, edge, timeout)
     end
@@ -530,54 +536,57 @@ module Beaglebone #:nodoc:
     # Wait for an edge trigger
     # Returns the type that triggered the event, e.g. :RISING, :FALLING, :BOTH
     #
-    # == Attributes
-    # +edge+ should be a symbol representing the trigger type, e.g. :RISING, :FALLING, :BOTH
-    # +timeout+ is optional and specifies a time window to wait
-    # +disable+ is optional.  If set, edge trigger detection is cleared on return
-    # == Example
-    # p9_11 = GPIOPin.new(:P9_11, :IN)
-    # p9_11.wait_for_edge(:RISING, 30) => :RISING
+    # @return [Symbol] :RISING, :FALLING, or :BOTH
+    #
+    # @param edge should be a symbol representing the trigger type, e.g. :RISING, :FALLING, :BOTH
+    # @param timeout is optional and specifies a time window to wait
+    #
+    # @example
+    #   p9_11 = GPIOPin.new(:P9_11, :IN)
+    #   p9_11.wait_for_edge(:RISING, 30) => :RISING
     def wait_for_edge(edge, timeout=nil)
       GPIO::wait_for_edge(@pin, edge, timeout)
     end
 
     # Returns last known state from +pin+, reads state if unknown
+    # @return [Symbol] :HIGH or :LOW
     def get_gpio_state
       GPIO::get_gpio_state(@pin)
     end
 
     # Returns mode from pin, reads mode if unknown
+    # @return [Symbol] :IN or :OUT
     def get_gpio_mode
       GPIO::get_gpio_mode(@pin)
     end
 
+    # Returns the GPIO edge trigger type
+    # @return [Symbol] :NONE, :RISING, :FALLING, or :BOTH
+    def get_gpio_edge
+      GPIO::get_gpio_edge(@pin)
+    end
+
+
     # Set GPIO mode on an initialized pin
     #
-    # == Attributes
-    # +mode+ should specify the mode of the pin, either :IN or :OUT
+    # @param mode should specify the mode of the pin, either :IN or :OUT
     #
-    # == Examples
-    # p9_12.set_gpio_mode(:OUT)
-    # p9_11.set_gpio_mode(:IN)
+    # @example
+    #   p9_12.set_gpio_mode(:OUT)
+    #   p9_11.set_gpio_mode(:IN)
     def set_gpio_mode(mode)
       GPIO::set_gpio_mode(@pin, mode)
     end
 
     # Set GPIO edge trigger type
     #
-    # == Attributes
-    # +edge+ should be a symbol representing the trigger type, e.g. :RISING, :FALLING, :BOTH
-    # +force+ is optional, if set will set the mode even if already set
+    # @param edge should be a symbol representing the trigger type, e.g. :RISING, :FALLING, :BOTH
+    # @param force is optional, if set will set the mode even if already set
     #
-    # == Examples
-    # p9_11.set_gpio_edge(:RISING)
+    # @example
+    #   p9_11.set_gpio_edge(:RISING)
     def set_gpio_edge(edge, force=nil)
       GPIO::set_gpio_edge(@pin, edge, force)
-    end
-
-    # Returns the GPIO edge trigger type
-    def get_gpio_edge
-      GPIO::get_gpio_edge(@pin)
     end
 
     # Disable GPIO pin
