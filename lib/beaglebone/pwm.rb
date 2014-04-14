@@ -36,9 +36,12 @@ module Beaglebone
         read_duty_value(pin)
         read_polarity_value(pin)
 
+        run_fd.write('0')
+        run_fd.flush
+
+        set_polarity(pin, polarity) if polarity
         set_frequency(pin, frequency) if frequency
         set_duty_cycle(pin, duty) if duty
-        set_polarity(pin, polarity) if polarity
 
         if run
           run_fd.write('1')
@@ -87,6 +90,25 @@ module Beaglebone
 
         raise StandardError, "Could not stop PWM: #{pin}" unless read_run_value(pin) == 0
         true
+      end
+
+      def run(pin)
+        Beaglebone::check_valid_pin(pin, :pwm)
+
+        return false unless enabled?(pin)
+
+        raise StandardError, "Pin is not PWM enabled: #{pin}" unless Beaglebone::get_pin_status(pin, :type) == :pwm
+
+        run_fd = Beaglebone::get_pin_status(pin, :fd_run)
+
+        raise StandardError, "Pin is not PWM enabled: #{pin}" unless run_fd
+
+        run_fd.write('1')
+        run_fd.flush
+
+        raise StandardError, "Could not start PWM: #{pin}" unless read_run_value(pin) == 1
+        true
+
       end
 
       def set_polarity(pin, polarity)
@@ -309,6 +331,10 @@ module Beaglebone
 
     def stop
       PWM::stop(@pin)
+    end
+
+    def run
+      PWM::run(@pin)
     end
 
     def set_polarity(polarity)
