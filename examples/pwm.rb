@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require '../lib/beaglebone.rb'
+require 'beaglebone'
 
 include  Beaglebone
 

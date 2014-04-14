@@ -207,7 +207,8 @@ module Beaglebone
           when :pwm
             Beaglebone::PWM.disable_pwm_pin(pin)
           else
-            #should never reach this
+            #we can't disable any other pin types at this time
+            raise StandardError, "Cannot disable pin: #{pin} in #{status[:type]} mode"
         end
       end
     end
