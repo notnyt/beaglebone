@@ -1,8 +1,24 @@
-module Beaglebone
+# == ain.rb
+# This file contains the Analog Input methods
+module Beaglebone #:nodoc:
+  # AIN
+  # procedural methods for Analog Input
+  # == Summary
+  # #read is called to get the analog value of a pin
+  # more advanced polling methods are also available
   module AIN
     class << self
+
+      # valid voltage readings in mv
       RANGE = (0..1799)
 
+      # Read from an analog pin
+      #
+      # == Attributes
+      # +pin+ should be a symbol representing the header pin
+      #
+      # == Examples
+      # AIN.read(:P9_33) => 1799
       def read(pin)
         Beaglebone::check_valid_pin(pin, :analog)
 
@@ -28,28 +44,19 @@ module Beaglebone
         ain_fd.read.strip.to_i
       end
 
-      def get_analog_pins
-        Beaglebone.pinstatus.clone.select { |x,y| x if y[:type] == :analog}.keys
-      end
-
-      def disable_analog_pin(pin)
-        Beaglebone::check_valid_pin(pin, :analog)
-        Beaglebone::delete_pin_status(pin)
-      end
-
-      def cleanup
-        #reset all GPIO we've used to IN and unexport them
-        get_analog_pins.each { |x| disable_analog_pin(x) }
-      end
-
-      def stop_wait(pin)
-        thread = Beaglebone::get_pin_status(pin, :thread)
-
-        thread.exit if thread
-        thread.join if thread
-      end
-
-      #run block on an edge trigger
+      # Runs a callback after voltage changes by specified amount
+      # This creates a new thread that runs in the background and polls at specified interval
+      # == Attributes
+      # +callback+ A method to call when the change is detected
+      # This method should take 4 arguments: the pin, the previous voltage, the current voltage, and the counter
+      # +pin+ should be a symbol representing the header pin, i.e. :P9_11
+      # +mv_change+ an integer specifying the required change in mv
+      # +interval+ a number representing the wait time between polling
+      # +repeats+ is optional and specifies the number of times the callback will be run
+      # == Example
+      # This polls every 0.1 seconds and will run after a 10mv change is detected
+      # callback = lambda { |pin, mv_last, mv, count| puts "[#{count}] #{pin} #{mv_last} -> #{mv}" }
+      # AIN.run_on_change(callback, :P9_33, 10, 0.1)
       def run_on_change(callback, pin, mv_change=10, interval=0.01, repeats=nil)
 
         raise StandardError, "Already waiting for change on pin: #{pin}" if Beaglebone::get_pin_status(pin, :waiting)
@@ -84,10 +91,32 @@ module Beaglebone
         Beaglebone::set_pin_status(pin, :thread, thread)
       end
 
+      # Runs a callback once after specified change in voltage detected
+      # Convenience method for run_on_change
       def run_once_on_change(callback, pin, mv_change=10, interval=0.01)
         run_on_change(callback, pin, mv_change, interval, 1)
       end
 
+      # Runs a callback after voltage changes beyond a certain threshold
+      # This creates a new thread that runs in the background and polls at specified interval
+      # When the voltage crosses the specified thresholds the callback is run
+      # == Attributes
+      # +callback+ A method to call when the change is detected
+      # This method should take 6 arguments:
+      # the pin, the previous voltage, the current voltage, the previous state, the current state, and the counter
+      # +pin+ should be a symbol representing the header pin, i.e. :P9_11
+      # +mv_lower+ an integer specifying the lower threshold voltage
+      # +mv_upper+ an integer specifying the upper threshold voltage
+      # +mv_reset+ an integer specifying the range in mv required to reset the threshold trigger
+      # +interval+ a number representing the wait time between polling
+      # +repeats+ is optional and specifies the number of times the callback will be run
+      # == Example
+      # This polls every 0.01 seconds and will run after a the voltage crosses 400mv or 1200mv.
+      # Voltage will have to cross a range by at least 5mv to prevent rapidly triggering events
+      # callback = lambda { |pin, mv_last, mv, state_last, state, count|
+      #   puts "[#{count}] #{pin} #{state_last} -> #{state}     #{mv_last} -> #{mv}"
+      # }
+      # AIN.run_on_threshold(callback, :P9_33, 400, 1200, 5, 0.01)
       def run_on_threshold(callback, pin, mv_lower, mv_upper, mv_reset=10, interval=0.01, repeats=nil)
 
         raise StandardError, "Already waiting for change on pin: #{pin}" if Beaglebone::get_pin_status(pin, :waiting)
@@ -124,11 +153,34 @@ module Beaglebone
         Beaglebone::set_pin_status(pin, :thread, thread)
       end
 
+      # Runs a callback once after voltage crosses a specified threshold
+      # Convenience method for run_on_threshold
       def run_once_on_threshold(callback, pin, mv_lower, mv_upper, mv_reset=10, interval=0.01)
         run_on_threshold(callback, pin, mv_lower, mv_upper, mv_reset, interval, 1)
       end
 
-      #noinspection RubyScope
+      # noinspection RubyScope
+
+      # Runs a callback after voltage changes beyond a certain threshold
+      # This creates a new thread that runs in the background and polls at specified interval
+      # When the voltage crosses the specified thresholds the callback is run
+      # == Attributes
+      # +callback+ A method to call when the change is detected
+      # This method should take 6 arguments:
+      # the pin, the previous voltage, the current voltage, the previous state, the current state, and the counter
+      # +pin+ should be a symbol representing the header pin, i.e. :P9_11
+      # +mv_lower+ an integer specifying the lower threshold voltage
+      # +mv_upper+ an integer specifying the upper threshold voltage
+      # +mv_reset+ an integer specifying the range in mv required to reset the threshold trigger
+      # +interval+ a number representing the wait time between polling
+      # +repeats+ is optional and specifies the number of times the callback will be run
+      # == Example
+      # This polls every 0.01 seconds and will run after a the voltage crosses 400mv or 1200mv.
+      # Voltage will have to cross a range by at least 5mv to prevent rapidly triggering events
+      # callback = lambda { |pin, mv_last, mv, state_last, state, count|
+      #   puts "[#{count}] #{pin} #{state_last} -> #{state}     #{mv_last} -> #{mv}"
+      # }
+      # AIN.run_on_threshold(callback, :P9_33, 400, 1200, 5, 0.01)
       def wait_for_threshold(pin, mv_lower, mv_upper, mv_reset=10, interval=0.01, mv_last=nil, state_last=nil)
         Beaglebone::check_valid_pin(pin, :analog)
         raise ArgumentError, "mv_upper needs to be between 0 and 1800: #{pin} (#{mv_upper})" unless (0..1800).include?(mv_upper)
@@ -207,7 +259,16 @@ module Beaglebone
 
       end
 
-      #loop with sleep of interval after each read, return after voltage changes more than mv_change mv
+      # Returns when voltage changes by specified amount
+      # == Attributes
+      # +pin+ should be a symbol representing the header pin, i.e. :P9_11
+      # +mv_change+ an integer specifying the required change in mv
+      # +interval+ a number representing the wait time between polling
+      # +mv_last+ is optional and specifies the voltage to use as the initial point to measure change
+      # == Example
+      # This will poll every P9_33 every 0.01 seconds until 10mv of change is detected
+      # This method will return the initial reading, final reading, and how many times it polled
+      # AIN.wait_for_change(:P9_33, 10, 0.01) => [ 1200, 1210, 4]
       def wait_for_change(pin, mv_change, interval, mv_last=nil)
 
         Beaglebone::check_valid_pin(pin, :analog)
@@ -250,35 +311,107 @@ module Beaglebone
         [ mv_last, -1, count ]
       end
 
+      # Stops any threads waiting for data on specified pin
+      #
+      # == Attributes
+      # +pin+ should be a symbol representing the header pin, i.e. :P9_11
+      def stop_wait(pin)
+        thread = Beaglebone::get_pin_status(pin, :thread)
+
+        thread.exit if thread
+        thread.join if thread
+      end
+
+      # Return an array of AIN pins in use
+      #
+      # == Example
+      # AIN.get_analog_pins => [:P9_33, :P9_34]
+      def get_analog_pins
+        Beaglebone.pinstatus.clone.select { |x,y| x if y[:type] == :analog}.keys
+      end
+
+      # Disable an analog pin
+      # == Attributes
+      # +pin+ should be a symbol representing the header pin
+      def disable_analog_pin(pin)
+        Beaglebone::check_valid_pin(pin, :analog)
+        Beaglebone::delete_pin_status(pin)
+      end
+
+      # Disable all analog pins
+      def cleanup
+        #reset all GPIO we've used to IN and unexport them
+        get_analog_pins.each { |x| disable_analog_pin(x) }
+      end
+
     end
   end
 
-  #oo interface
+  # Object Oriented AIN Implementation.
+  # This treats the pin as an object.
   class AINPin
+    # Initialize a Analog pin
+    # Return's an AINPin object
+    #
+    # == Examples
+    # p9_33 = AINPin.new(:P9_33)
     def initialize(pin)
       @pin = pin
     end
 
+    # Read from an analog pin
+    #
+    # == Examples
+    # p9_33 = AINPin.new(:P9_33)
+    # p9_33.read => 1799
     def read
       AIN::read(@pin)
     end
 
-    def disable_analog_pin
-      AIN::disable_analog_pin(@pin)
-    end
-
-    def stop_wait
-      AIN::stop_wait(@pin)
-    end
-
+    # Runs a callback after voltage changes by specified amount
+    # This creates a new thread that runs in the background and polls at specified interval
+    # == Attributes
+    # +callback+ A method to call when the change is detected
+    # This method should take 4 arguments: the pin, the previous voltage, the current voltage, and the counter
+    # +mv_change+ an integer specifying the required change in mv
+    # +interval+ a number representing the wait time between polling
+    # +repeats+ is optional and specifies the number of times the callback will be run
+    # == Example
+    # This polls every 0.1 seconds and will run after a 10mv change is detected
+    # callback = lambda { |pin, mv_last, mv, count| puts "[#{count}] #{pin} #{mv_last} -> #{mv}" }
+    # p9_33 = AINPin.new(:P9_33)
+    # p9_33.run_on_change(callback, 10, 0.1)
     def run_on_change(callback, mv_change=10, interval=0.01, repeats=nil)
       AIN::run_on_change(callback, @pin, mv_change, interval, repeats)
     end
 
+    # Runs a callback once after specified change in voltage detected
+    # Convenience method for run_on_change
     def run_once_on_change(callback, mv_change=10, interval=0.01)
       AIN::run_once_on_change(callback, @pin, mv_change, interval)
     end
 
+
+    # Runs a callback after voltage changes beyond a certain threshold
+    # This creates a new thread that runs in the background and polls at specified interval
+    # When the voltage crosses the specified thresholds the callback is run
+    # == Attributes
+    # +callback+ A method to call when the change is detected
+    # This method should take 6 arguments:
+    # the pin, the previous voltage, the current voltage, the previous state, the current state, and the counter
+    # +mv_lower+ an integer specifying the lower threshold voltage
+    # +mv_upper+ an integer specifying the upper threshold voltage
+    # +mv_reset+ an integer specifying the range in mv required to reset the threshold trigger
+    # +interval+ a number representing the wait time between polling
+    # +repeats+ is optional and specifies the number of times the callback will be run
+    # == Example
+    # This polls every 0.01 seconds and will run after a the voltage crosses 400mv or 1200mv.
+    # Voltage will have to cross a range by at least 5mv to prevent rapidly triggering events
+    # callback = lambda { |pin, mv_last, mv, state_last, state, count|
+    #   puts "[#{count}] #{pin} #{state_last} -> #{state}     #{mv_last} -> #{mv}"
+    # }
+    # p9_33 = AINPin.new(:P9_33)
+    # p9_33.run_on_threshold(callback, 400, 1200, 5, 0.01)
     def run_on_threshold(callback, mv_lower, mv_upper, mv_reset=10, interval=0.01, repeats=nil)
       AIN::run_on_threshold(callback, @pin, mv_lower, mv_upper, mv_reset, interval, repeats)
     end
@@ -287,12 +420,34 @@ module Beaglebone
       AIN::run_once_on_threshold(callback, @pin, mv_lower, mv_upper, mv_reset, interval)
     end
 
+    # Runs a callback once after voltage crosses a specified threshold
+    # Convenience method for run_on_threshold
     def wait_for_threshold(mv_lower, mv_upper, mv_reset=10, interval=0.01, mv_last=nil, state_last=nil)
       AIN::wait_for_threshold(@pin, mv_lower, mv_upper, mv_reset, interval, mv_last, state_last)
     end
 
+    # Returns when voltage changes by specified amount
+    # == Attributes
+    # +mv_change+ an integer specifying the required change in mv
+    # +interval+ a number representing the wait time between polling
+    # +mv_last+ is optional and specifies the voltage to use as the initial point to measure change
+    # == Example
+    # This will poll every P9_33 every 0.01 seconds until 10mv of change is detected
+    # This method will return the initial reading, final reading, and how many times it polled
+    # p9_33 = AINPin.new(:P9_33)
+    # p9_33.wait_for_change(10, 0.01) => [ 1200, 1210, 4]
     def wait_for_change(mv_change, interval, mv_last=nil)
       AIN::wait_for_change(@pin, mv_change, interval, mv_last)
+    end
+
+    # Stops any threads waiting for data on this pin
+    def stop_wait
+      AIN::stop_wait(@pin)
+    end
+
+    # Disable analog pin
+    def disable_analog_pin
+      AIN::disable_analog_pin(@pin)
     end
 
   end

@@ -1,5 +1,6 @@
+# This is the main module for this gem.  You generally do not want to call these methods directly.
 module Beaglebone
-
+  # Hash of pins and their uses
   PINS = {
       :USR0  => { :gpio => 53, :led => 'usr0' },
       :USR1  => { :gpio => 54, :led => 'usr1' },
@@ -124,6 +125,14 @@ module Beaglebone
       :P9_46 => { :dgnd => 'ground' },
   }.freeze
 
+  # Generic device trees
+  TREES = {
+      :UART => { :global => nil, :pin => 'BB-UART' },
+      :ADC  => { :global => 'BB-ADC', :pin => nil },
+      :PWM  => { :global => 'am33xx_pwm', :pin => 'bone_pwm_' },
+  }.freeze
+
+  # UART device hash
   UARTS = {
       :UART1 => { :id => 1, :rx => :P9_26, :tx => :P9_24, :dev => '/dev/ttyO1' },
       :UART2 => { :id => 2, :rx => :P9_22, :tx => :P9_21, :dev => '/dev/ttyO2' },
@@ -132,12 +141,7 @@ module Beaglebone
       :UART5 => { :id => 5, :rx => :P8_38, :tx => :P8_37, :dev => '/dev/ttyO5' },
   }.freeze
 
-  TREES = {
-      :UART => { :global => nil, :pin => 'BB-UART' },
-      :ADC  => { :global => 'BB-ADC', :pin => nil },
-      :PWM  => { :global => 'am33xx_pwm', :pin => 'bone_pwm_' },
-  }.freeze
-
+  # I2C device hash
   I2CS = {
       :I2C0  => { :id => 0, :dev => '/dev/i2c-0' },
       :I2C1  => { :id => 2, :dev => '/dev/i2c-2', :scl => :P9_17, :sda => :P9_18, :devicetree => 'BB-I2C1' },
@@ -146,6 +150,7 @@ module Beaglebone
       :I2C1A => { :id => 2, :dev => '/dev/i2c-2', :scl => :P9_24, :sda => :P9_26, :devicetree => 'BB-I2C1A1' },
   }.freeze
 
+  # SPI device hash
   SPIS = {
       :counter => 1,
       :SPI0    => { :id => 0, :dev => '/dev/spidev', :devicetree => 'BB-SPIDEV0',
@@ -170,6 +175,7 @@ module Beaglebone
   class << self
     attr_accessor :pinstatus, :pinmutex, :loaded_dtbs
 
+    # get hash entry for pin
     def get_pin_status(pin, key = nil)
       pinmutex.synchronize do
         if key
@@ -180,6 +186,7 @@ module Beaglebone
       end
     end
 
+    # set hash entry for pin
     def set_pin_status(pin, key, value)
       pinmutex.synchronize do
         pinstatus[pin]    ||= {}
@@ -187,6 +194,7 @@ module Beaglebone
       end
     end
 
+    # delete pin's hash entry
     def delete_pin_status(pin, key = nil)
       pinmutex.synchronize do
         if key.nil?
@@ -197,6 +205,7 @@ module Beaglebone
       end
     end
 
+    # disable pin
     def disable_pin(pin)
       status = get_pin_status(pin)
 
@@ -213,6 +222,7 @@ module Beaglebone
       end
     end
 
+    # check if a pin of given type is valid
     def check_valid_pin(pin, type = nil)
       #check to see if pin exists
       pin = pin.to_sym.upcase
@@ -223,14 +233,17 @@ module Beaglebone
       end
     end
 
+    # return capemgr directory
     def get_capemgr_dir
       Dir.glob('/sys/devices/bone_capemgr.*').first
     end
 
+    # check if device tree is loaded
     def device_tree_loaded?(name)
       !!File.open("#{get_capemgr_dir}/slots").read.match(/,#{name}$/)
     end
 
+    # load a device tree
     def device_tree_load(name)
       return true if loaded_dtbs.include?(name)
 
@@ -246,7 +259,7 @@ module Beaglebone
       true
     end
 
-    #unload a device tree, return false if not loaded, return true if it unloads
+    # unload a device tree, return false if not loaded, return true if it unloads
     def device_tree_unload(name)
       return false unless device_tree_loaded?(name)
 
@@ -259,7 +272,7 @@ module Beaglebone
       true
     end
 
-    #cleanup all the things
+    # cleanup all the things
     def cleanup
       Beaglebone::AIN.cleanup
       Beaglebone::PWM.cleanup

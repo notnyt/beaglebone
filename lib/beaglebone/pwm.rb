@@ -333,8 +333,8 @@ module Beaglebone
       PWM::stop(@pin)
     end
 
-    def run
-      PWM::run(@pin)
+    def stop
+      PWM::stop(@pin)
     end
 
     def set_polarity(polarity)
