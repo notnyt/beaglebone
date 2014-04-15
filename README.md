@@ -1,8 +1,6 @@
 # Beaglebone Ruby Library
-<font color='red'>
 Documentation is in progress and will be completed shortly.
 Examples are available in the example directory.
-</font>
 
 **Table of Contents**
 - [Overview](#overview)
@@ -10,6 +8,7 @@ Examples are available in the example directory.
   - [Installing Ruby](#installing-ruby)
   - [Installing Beaglebone Gem](#installing-gem)
 - [Usage](#usage)
+- [Reference](#reference)
 - [Examples](#examples)
   - [GPIO](#gpio)
   - [Shift Registers](#shift-registers)
@@ -46,6 +45,9 @@ To use this gem, you need to require it in your ruby code.  An example follows
 require 'beaglebone'
 include Beaglebone
 ```
+
+## Rereference
+A full reference is available [here.](http://rubydoc.info/gems/beaglebone/1.0.5/frames)
 
 ## Examples
 
