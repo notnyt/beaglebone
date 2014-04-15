@@ -1,6 +1,6 @@
 # == shiftregister.rb
 # This file contains the shiftregister control methods
-module Beaglebone
+module Beaglebone #:nodoc:
   class ShiftRegister
 
     # Create a shiftregister object based on 3 GPIO pins
