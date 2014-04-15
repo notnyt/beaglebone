@@ -2,7 +2,7 @@
 # This file contains the GPIO methods
 
 module Beaglebone #:nodoc:
-  # GPIO
+  # == GPIO
   # procedural methods for GPIO control
   # == Summary
   # #pin_mode is called to initialize a pin.
@@ -101,7 +101,7 @@ module Beaglebone #:nodoc:
         Beaglebone::set_pin_status(pin, :state, state)
       end
 
-      # Runs a callback on an edge trigger event
+      # Runs a callback on an edge trigger event.
       # This creates a new thread that runs in the background
       #
       # @param callback A method to call when the edge trigger is detected.  This method should take 3 arguments, the pin, the edge, and the counter
@@ -139,8 +139,8 @@ module Beaglebone #:nodoc:
         Beaglebone::set_pin_status(pin, :thread, thread)
       end
 
-      # Runs a callback one time on an edge trigger event
-      # this is a convenience method for run_on_edge
+      # Runs a callback one time on an edge trigger event.
+      # This is a convenience method for run_on_edge
       # @see #run_on_edge
       def run_once_on_edge(callback, pin, edge, timeout = nil)
         run_on_edge(callback, pin, edge, timeout, 1)
@@ -156,7 +156,7 @@ module Beaglebone #:nodoc:
         thread.join if thread
       end
 
-      # Wait for an edge trigger
+      # Wait for an edge trigger.
       # Returns the type that triggered the event, e.g. :RISING, :FALLING, :BOTH
       #
       # @returns [Symbol] :RISING, :FALLING, or :BOTH
@@ -221,8 +221,8 @@ module Beaglebone #:nodoc:
       # Sends data to a shift register
       #
       # @param latch_pin should be a symbol representing the header pin, i.e. :P9_12
-      # @param clock_pin should be a symbol representing the header pin, i.e. :P9_12
-      # @param data_pin should be a symbol representing the header pin, i.e. :P9_12
+      # @param clock_pin should be a symbol representing the header pin, i.e. :P9_13
+      # @param data_pin should be a symbol representing the header pin, i.e. :P9_14
       # @param data Integer value to write to the shift register
       # @param lsb optional, send least significant bit first if set
       #
@@ -505,7 +505,7 @@ module Beaglebone #:nodoc:
       GPIO::digital_read(@pin)
     end
 
-    # Runs a callback on an edge trigger event
+    # Runs a callback on an edge trigger event.
     # This creates a new thread that runs in the background
     #
     # @param callback A method to call when the edge trigger is detected.  This method should take 3 arguments, the pin, the edge, and the counter
@@ -520,7 +520,7 @@ module Beaglebone #:nodoc:
       GPIO::run_on_edge(callback, @pin, edge, timeout, repeats)
     end
 
-    # Runs a callback one time on an edge trigger event
+    # Runs a callback one time on an edge trigger event.
     # this is a convenience method for run_on_edge
     # @see #run_on_edge
     def run_once_on_edge(callback, edge, timeout=nil)
@@ -533,7 +533,7 @@ module Beaglebone #:nodoc:
       GPIO::stop_edge_wait(@pin)
     end
 
-    # Wait for an edge trigger
+    # Wait for an edge trigger.
     # Returns the type that triggered the event, e.g. :RISING, :FALLING, :BOTH
     #
     # @return [Symbol] :RISING, :FALLING, or :BOTH

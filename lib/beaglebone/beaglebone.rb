@@ -89,10 +89,8 @@ module Beaglebone
       :P9_15 => { :gpio => 48 },
       :P9_16 => { :gpio => 51, :pwm => 'pwm_1b', :pwm_id => 1, :pwm_mux => 6 },
       #17 and 18 are not currently working for gpio in 3.8
-      #:P9_17 => { :gpio => 4, :i2c => 'i2c1_scl', :i2c_id => 1, :spi => 'spi0_cs0', :spi_id => 0 },
-      #:P9_18 => { :gpio => 5, :i2c => 'i2c1_sda', :i2c_id => 1, :spi => 'spi0_d1', :spi_id => 0 },
-      :P9_17 => { :i2c => 'i2c1_scl', :i2c_id => 1, :spi => 'spi0_cs0', :spi_id => 0 },
-      :P9_18 => { :i2c => 'i2c1_sda', :i2c_id => 1, :spi => 'spi0_d1', :spi_id => 0 },
+      :P9_17 => { :gpio => 4, :i2c => 'i2c1_scl', :i2c_id => 1, :spi => 'spi0_cs0', :spi_id => 0 },
+      :P9_18 => { :gpio => 5, :i2c => 'i2c1_sda', :i2c_id => 1, :spi => 'spi0_d1', :spi_id => 0 },
       :P9_19 => { :i2c => 'i2c2_scl', :i2c_id => 2, :uart => 'uart1_rtsn', :uart_id => 1, :spi => 'spi1_cs1', :spi_id => 1 },
       :P9_20 => { :i2c => 'i2c2_sda', :i2c_id => 2, :uart => 'uart1_ctsn', :uart_id => 1, :spi => 'spi1_cs0', :spi_id => 1 },
       :P9_21 => { :gpio => 3, :pwm => 'pwm_0b', :pwm_id => 0, :pwm_mux => 3, :i2c => 'i2c2_scl', :i2c_id => 2, :uart => 'uart2_txd', :uart_id => 2, :spi => 'spi0_d0', :spi_id => 0 },
@@ -175,6 +173,7 @@ module Beaglebone
   class << self
     attr_accessor :pinstatus, :pinmutex, :loaded_dtbs
 
+    # @private
     # get hash entry for pin
     def get_pin_status(pin, key = nil)
       pinmutex.synchronize do
@@ -186,6 +185,7 @@ module Beaglebone
       end
     end
 
+    # @private
     # set hash entry for pin
     def set_pin_status(pin, key, value)
       pinmutex.synchronize do
@@ -194,6 +194,7 @@ module Beaglebone
       end
     end
 
+    # @private
     # delete pin's hash entry
     def delete_pin_status(pin, key = nil)
       pinmutex.synchronize do

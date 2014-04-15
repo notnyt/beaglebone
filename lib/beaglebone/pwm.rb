@@ -1,7 +1,7 @@
 # == pwm.rb
 # This file contains the PWM control methods
 module Beaglebone #:nodoc:
-  # AIN
+  # == PWM
   # procedural methods for PWM control
   # == Summary
   # #start is called to enable a PWM pin

@@ -1,11 +1,11 @@
 # == ain.rb
 # This file contains the Analog Input methods
 module Beaglebone #:nodoc:
-  # AIN
+  # == AIN
   # procedural methods for Analog Input
   # == Summary
-  # #read is called to get the analog value of a pin
-  # more advanced polling methods are also available
+  # #read is called to get the analog value of a pin.
+  # More advanced polling methods are also available
   module AIN
     class << self
 
@@ -45,8 +45,8 @@ module Beaglebone #:nodoc:
         ain_fd.read.strip.to_i
       end
 
-      # Runs a callback after voltage changes by specified amount
-      # This creates a new thread that runs in the background and polls at specified interval
+      # Runs a callback after voltage changes by specified amount.
+      # This creates a new thread that runs in the background and polls at specified interval.
       #
       # @param callback A method to call when the change is detected.  This method should take 4 arguments: the pin, the previous voltage, the current voltage, and the counter
       # @param pin should be a symbol representing the header pin, i.e. :P9_11
@@ -99,9 +99,9 @@ module Beaglebone #:nodoc:
         run_on_change(callback, pin, mv_change, interval, 1)
       end
 
-      # Runs a callback after voltage changes beyond a certain threshold
-      # This creates a new thread that runs in the background and polls at specified interval
-      # When the voltage crosses the specified thresholds the callback is run
+      # Runs a callback after voltage changes beyond a certain threshold.
+      # This creates a new thread that runs in the background and polls at specified interval.
+      # When the voltage crosses the specified thresholds the callback is run.
       #
       # @param callback A method to call when the change is detected.  This method should take 6 arguments: the pin, the previous voltage, the current voltage, the previous state, the current state, and the counter
       # @param pin should be a symbol representing the header pin, i.e. :P9_11
@@ -153,7 +153,7 @@ module Beaglebone #:nodoc:
         Beaglebone::set_pin_status(pin, :thread, thread)
       end
 
-      # Runs a callback once after voltage crosses a specified threshold
+      # Runs a callback once after voltage crosses a specified threshold.
       # Convenience method for run_on_threshold
       # @see #run_on_threshold
       def run_once_on_threshold(callback, pin, mv_lower, mv_upper, mv_reset=10, interval=0.01)
@@ -162,9 +162,9 @@ module Beaglebone #:nodoc:
 
       # noinspection RubyScope
 
-      # Runs a callback after voltage changes beyond a certain threshold
-      # This creates a new thread that runs in the background and polls at specified interval
-      # When the voltage crosses the specified thresholds the callback is run
+      # Runs a callback after voltage changes beyond a certain threshold.
+      # This creates a new thread that runs in the background and polls at specified interval.
+      # When the voltage crosses the specified thresholds the callback is run.
       #
       # This method should take 6 arguments:
       # the pin, the previous voltage, the current voltage, the previous state, the current state, and the counter
@@ -374,8 +374,8 @@ module Beaglebone #:nodoc:
       AIN::read(@pin)
     end
 
-    # Runs a callback after voltage changes by specified amount
-    # This creates a new thread that runs in the background and polls at specified interval
+    # Runs a callback after voltage changes by specified amount.
+    # This creates a new thread that runs in the background and polls at specified interval.
     #
     # @param callback A method to call when the change is detected
     # This method should take 4 arguments: the pin, the previous voltage, the current voltage, and the counter
@@ -399,13 +399,11 @@ module Beaglebone #:nodoc:
     end
 
 
-    # Runs a callback after voltage changes beyond a certain threshold
-    # This creates a new thread that runs in the background and polls at specified interval
-    # When the voltage crosses the specified thresholds the callback is run
+    # Runs a callback after voltage changes beyond a certain threshold.
+    # This creates a new thread that runs in the background and polls at specified interval.
+    # When the voltage crosses the specified thresholds the callback is run.
     #
-    # @param callback A method to call when the change is detected
-    # This method should take 6 arguments:
-    # the pin, the previous voltage, the current voltage, the previous state, the current state, and the counter
+    # @param callback A method to call when the change is detected. This method should take 6 arguments: the pin, the previous voltage, the current voltage, the previous state, the current state, and the counter
     # @param mv_lower an integer specifying the lower threshold voltage
     # @param mv_upper an integer specifying the upper threshold voltage
     # @param mv_reset an integer specifying the range in mv required to reset the threshold trigger
@@ -425,7 +423,7 @@ module Beaglebone #:nodoc:
     end
 
 
-    # Runs a callback once after voltage crosses a specified threshold
+    # Runs a callback once after voltage crosses a specified threshold.
     # Convenience method for run_on_threshold
     def run_once_on_threshold(callback, mv_lower, mv_upper, mv_reset=10, interval=0.01)
       AIN::run_once_on_threshold(callback, @pin, mv_lower, mv_upper, mv_reset, interval)

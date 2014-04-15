@@ -1,5 +1,10 @@
-module Beaglebone
-
+# == spi.rb
+# This file contains SPI methods
+module Beaglebone #:nodoc:
+  # == SPI
+  # Procedural methods for SPI control
+  # == Summary
+  # #setup is called to initialize an SPI device
   module SPI
     #some ioctl defines
     IOC_NONE  = 0
@@ -56,6 +61,69 @@ module Beaglebone
     class << self
 
       attr_accessor :spistatus, :spimutex
+
+      # Initialize an SPI device
+      #
+      # @param spi should be a symbol representing the SPI device
+      # @param mode optional, default 0, specifies the SPI mode :SPI_MODE_0 through 3
+      # @param speed optional, specifies the SPI communication speed
+      # @param bpw optional, specifies the bits per word
+      #
+      # @example
+      #   SPI.setup(:SPI0, SPI_MODE_0)
+      def setup(spi, mode=nil, speed=1000000, bpw=8)
+        check_spi_valid(spi)
+
+        #make sure spi not already enabled
+        return if get_spi_status(spi)
+
+        mode = mode || SPI_MODE_0
+
+        spiinfo = SPIS[spi]
+
+        #ensure dtb is loaded
+        Beaglebone::device_tree_load("#{spiinfo[:devicetree]}") if spiinfo[:devicetree]
+
+        #open the spi device.
+        spi_fd = File.open("#{spiinfo[:dev]}#{SPIS[:counter]}.0", 'r+')
+
+        set_spi_status(spi, :fd_spi, spi_fd)
+        set_spi_status(spi, :mutex, Mutex.new)
+
+        set_mode(spi, mode)
+        set_bpw(spi, bpw)
+        set_speed(spi, speed)
+
+        SPIS[:counter] += 1
+
+        spiinfo[:pins].each do |pin|
+          Beaglebone::set_pin_status(pin, :spi, spiinfo[:id])
+          Beaglebone::set_pin_status(pin, :type, :spi)
+          Beaglebone::set_pin_status(pin, :fd_spi, spi_fd)
+        end
+
+      end
+
+      # Transfer data to and from the SPI device
+      #
+      # @return String data read from SPI device
+      #
+      # @param spi should be a symbol representing the SPI device
+      # @param tx_data data to transmit
+      # @param readbytes bytes to read, otherwise it sizeof tx_data is used
+      # @param speed optional, speed to xfer at
+      # @param delay optional delay
+      # @param bpw optional bits per word
+      #
+      # @example
+      #   # communicate with MCP3008
+      #   # byte 1: start bit
+      #   # byte 2: single(1)/diff(0),3 bites for channel, null pad
+      #   # byte 3: don't care
+      #   SPI.setup(:SPI0, SPI_MODE_0)
+      #   raw = SPI.xfer(:SPI0, [ 0b00000001, 0b10000000, 0].pack("C*"))
+      #   data = raw.unpack("C*")
+      #   val = ((data[1] & 0b00000011) << 8 ) | data[2]
       def xfer(spi, tx_data, readbytes=0, speed=nil, delay=nil, bpw=nil)
         check_spi_enabled(spi)
 
@@ -103,11 +171,18 @@ module Beaglebone
         rx_data
       end
 
+      # Return the file descriptor to the open SPI device
+      #
+      # @param spi should be a symbol representing the SPI device
       def file(spi)
         check_spi_enabled(spi)
         get_spi_status(spi, :fd_spi)
       end
 
+      # Set the communication speed of the specified SPI device
+      #
+      # @param spi should be a symbol representing the SPI device
+      # @param speed communication speed
       def set_speed(spi, speed)
         speed = speed.to_i
         raise ArgumentError, "Speed (#{speed.to_s}) must be a positive integer" unless speed > 0
@@ -120,6 +195,10 @@ module Beaglebone
         set_spi_status(spi, :speed, speed)
       end
 
+      # Set the communication speed of the specified SPI device
+      #
+      # @param spi should be a symbol representing the SPI device
+      # @param mode should be a valid SPI mode, e.g. :SPI_MODE_0 through 3
       def set_mode(spi, mode)
         check_spi_enabled(spi)
         raise ArgumentError, "Mode (#{mode.to_s}) is unknown" unless [SPI_MODE_0, SPI_MODE_1, SPI_MODE_2, SPI_MODE_3].include?(mode)
@@ -129,6 +208,10 @@ module Beaglebone
         spi_fd.ioctl(SPI_IOC_RD_MODE, [mode].pack('C'))
       end
 
+      # Set the bits per word of the specified SPI device
+      #
+      # @param spi should be a symbol representing the SPI device
+      # @param bpw should specify the bits per word
       def set_bpw(spi, bpw)
         bpw = bpw.to_i
         raise ArgumentError, "BPW (#{bpw.to_s}) must be a positive integer" unless bpw > 0
@@ -141,39 +224,11 @@ module Beaglebone
         set_spi_status(spi, :bpw, bpw)
       end
 
-      def setup(spi, mode=nil, speed=1000000, bpw=8)
-        check_spi_valid(spi)
-
-        #make sure spi not already enabled
-        return if get_spi_status(spi)
-
-        mode = mode || SPI_MODE_0
-
-        spiinfo = SPIS[spi]
-
-        #ensure dtb is loaded
-        Beaglebone::device_tree_load("#{spiinfo[:devicetree]}") if spiinfo[:devicetree]
-
-        #open the spi device.
-        spi_fd = File.open("#{spiinfo[:dev]}#{SPIS[:counter]}.0", 'r+')
-
-        set_spi_status(spi, :fd_spi, spi_fd)
-        set_spi_status(spi, :mutex, Mutex.new)
-
-        set_mode(spi, mode)
-        set_bpw(spi, bpw)
-        set_speed(spi, speed)
-
-        SPIS[:counter] += 1
-
-        spiinfo[:pins].each do |pin|
-          Beaglebone::set_pin_status(pin, :spi, spiinfo[:id])
-          Beaglebone::set_pin_status(pin, :type, :spi)
-          Beaglebone::set_pin_status(pin, :fd_spi, spi_fd)
-        end
-
-      end
-
+      # Disable the specified SPI device
+      #
+      # @note device trees cannot be unloaded at this time without kernel panic.
+      #
+      # @param spi should be a symbol representing the SPI device
       def disable(spi)
         check_spi_valid(spi)
         check_spi_enabled(spi)
@@ -189,6 +244,7 @@ module Beaglebone
 
       end
 
+      # Disable all active SPI devices
       def cleanup
         #reset all spis we've used and unload the device tree
         spistatus.clone.keys.each { |spi| disable(spi)}
@@ -196,6 +252,7 @@ module Beaglebone
 
       private
 
+      #ensure spi is valid
       def check_spi_valid(spi)
         raise ArgumentError, "Invalid spi Specified #{spi.to_s}" unless SPIS[spi] && SPIS[spi][:sclk]
         spiinfo = SPIS[spi.to_sym.upcase]
@@ -217,6 +274,7 @@ module Beaglebone
         end
       end
 
+      # lock spi
       def lock_spi(spi)
         check_spi_enabled(spi)
         mutex = get_spi_status(spi, :mutex)
@@ -226,10 +284,12 @@ module Beaglebone
         end
       end
 
+      # ensure spi is enabled
       def check_spi_enabled(spi)
         raise ArgumentError, "spi not enabled #{spi.to_s}" unless get_spi_status(spi)
       end
 
+      # disable spi pin
       def disable_spi_pin(pin)
         Beaglebone::check_valid_pin(pin, :spi)
 
@@ -290,31 +350,78 @@ module Beaglebone
     end
   end
 
-  #oo interface
+  # Object Oriented SPI Implementation.
+  # This treats the SPI device as an object.
   class SPIDevice
+    # Initialize an SPI device.  Returns an SPIDevice object
+    #
+    # @param spi should be a symbol representing the SPI device
+    # @param mode optional, default 0, specifies the SPI mode :SPI_MODE_0 through 3
+    # @param speed optional, specifies the SPI communication speed
+    # @param bpw optional, specifies the bits per word
+    #
+    # @example
+    #   spi = SPIDevice.new(:SPI0, SPI_MODE_0)
     def initialize(spi,  mode=nil, speed=1000000, bpw=8)
       @spi = spi
       SPI::setup(@spi, mode, speed, bpw)
     end
 
+    # Transfer data to and from the SPI device
+    #
+    # @return String data read from SPI device
+    #
+    # @param tx_data data to transmit
+    # @param readbytes bytes to read, otherwise it sizeof tx_data is used
+    # @param speed optional, speed to xfer at
+    # @param delay optional delay
+    # @param bpw optional bits per word
+    #
+    # @example
+    #   # communicate with MCP3008
+    #   # byte 1: start bit
+    #   # byte 2: single(1)/diff(0),3 bites for channel, null pad
+    #   # byte 3: don't care
+    #   spi = SPIDevice.new(:SPI0)
+    #   raw = spi.xfer([ 0b00000001, 0b10000000, 0].pack("C*"))
+    #   data = raw.unpack("C*")
+    #   val = ((data[1] & 0b00000011) << 8 ) | data[2]
     def xfer(tx_data, readbytes=0, speed=nil, delay=nil, bpw=nil)
       SPI::xfer(@spi, tx_data, readbytes, speed, delay, bpw)
     end
 
-    def disable
-      SPI::disable(@spi)
+    # Return the file descriptor to the open SPI device
+    def file
+      SPI::file(@spi)
     end
 
+    # Set the communication speed of the SPI device
+    #
+    # @param speed communication speed
     def set_speed(speed)
       SPI::set_speed(@spi, speed)
     end
 
+    # Set the communication speed of the SPI device
+    #
+    # @param mode should be a valid SPI mode, e.g. :SPI_MODE_0 through 3
     def set_mode(mode)
       SPI::set_mode(@spi, mode)
     end
 
+    # Set the bits per word of the SPI device
+    #
+    # @param bpw should specify the bits per word
     def set_bpw(bpw)
       SPI::set_bpw(@spi, bpw)
+    end
+
+    # Disable the specified SPI device
+    #
+    # @note device trees cannot be unloaded at this time without kernel panic.
+    #
+    def disable
+      SPI::disable(@spi)
     end
 
   end

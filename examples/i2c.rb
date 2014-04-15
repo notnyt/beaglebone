@@ -12,7 +12,7 @@ i2c = I2CDevice.new(:I2C2)
 i2c.write(0x1e, [0x02, 0x00].pack("C*"))
 
 #enable temperatuer sensor, 15hz register update
-i2c.write(0x1e, [0x00, "10010000".to_i(2)].pack("C*") )
+i2c.write(0x1e, [0x00, 0b10010000].pack("C*") )
 
 #delay for the settings to take effect
 sleep(0.1)
@@ -66,7 +66,7 @@ I2C.setup(:I2C2)
 #put mag into continuous conversation mode
 I2C.write(:I2C2, 0x1e, [0x02, 0x00].pack("C*"))
 #enable temperatuer sensor, 15hz register update
-I2C.write(:I2C2, 0x1e, [0x00, "10010000".to_i(2)].pack("C*") )
+I2C.write(:I2C2, 0x1e, [0x00, 0b10010000].pack("C*") )
 #delay for the settings to take effect
 sleep(0.1)
 
