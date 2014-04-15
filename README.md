@@ -42,7 +42,7 @@ sudo gem install beaglebone
 ## Usage
 To use this gem, you need to require it in your Ruby code.  An example follows
 
-```
+```ruby
 #!/usr/bin/env ruby
 require 'beaglebone'
 include Beaglebone
