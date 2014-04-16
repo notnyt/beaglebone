@@ -61,7 +61,7 @@ A full reference is available [here](http://rubydoc.info/gems/beaglebone/1.0.5/f
 These examples will show the various ways to interact with the Beaglebones IO hardware.  They will need to be executed as root in order to function correctly.
 
 ### GPIO
-The GPIO pins on the Beaglebone run at 3.3v.  Do not provide more than this voltage to any pin or you will risk damaging the hardware.
+The GPIO pins on the Beaglebone run at **3.3v**.  Do not provide more than this voltage to any pin or you will risk damaging the hardware.
 
 GPIO pins have two modes, input and output.  These modes are represented by the symbols **:IN** and **:OUT**.
 
@@ -132,6 +132,30 @@ led4 = GPIOPin.new(:USR3, :OUT)
 end
 ```
 
+#### Edge Triggers
+The Beaglebone can also monitor for changes on a GPIO pin.  This is called an edge trigger.  Since this is interrupt based on the Beaglebone, you can wait for a change without wasting CPU cycles constantly polling the pin.
+
+The following trigger types are supported
+- Rising: Triggered when the state goes from low to high
+- Falling: Triggered when the state goes from high to low
+- Both: Triggered at any change in stae
+- None: Triggering is disabled
+
+These trigger types are represented by the symbols :RISING, :FALLING, :BOTH, and :NONE
+
+This example will wait for a rising edge to continue.
+
+```ruby
+# Initialize pin P9_11 in INPUT mode
+p9_11 = GPIOPin.new(:P9_11, :IN)
+
+# Wait here until we see a rising edge
+edge = p9_11.wait_for_edge(:RISING) => :RISING
+
+# Output the trigger type detected
+puts "Saw a #{edge} edge"
+```
+
 #### Shift Registers
 This library will also support writing to shift registers using GPIO pins.  We create a **ShiftRegister** object by initializing it with the latch pin, clock pin, and data pin.
 
@@ -144,11 +168,16 @@ This library will also support writing to shift registers using GPIO pins.  We c
 shiftreg = ShiftRegister.new(:P9_11, :P9_12, :P9_13)
 
 # Write value to shift register
-shiftreg.shiftout(0b11111111)
+shiftreg.shift_out(0b11111111)
 ```
 
 
 ### Analog Inputs
+The Analog pins on the Beaglebone run at **1.8v**.  Do not provide more than this voltage to any pin or you will risk damaging the hardware.  The header has pins available to provide a 1.8v for analog devices as well as a dedicated analog ground.
+
+#### Reading
+#### Waiting for Change
+#### Waiting for Threshold
 
 ### PWM
 

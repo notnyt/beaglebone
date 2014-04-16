@@ -32,7 +32,7 @@ module Beaglebone #:nodoc:
     # @example
     #   shiftregister = ShiftRegister.new(:P9_11, :P9_12, :P9_13)
     #   shiftregister.shift_out(255)
-    def shiftout(data, lsb=nil)
+    def shift_out(data, lsb=nil)
       GPIO::shift_out(@latch_pin, @clock_pin, @data_pin, data, lsb || @lsb)
     end
 

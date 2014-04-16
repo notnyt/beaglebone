@@ -244,6 +244,8 @@ module Beaglebone #:nodoc:
           digital_write(clock_pin, :HIGH)
         end
         digital_write(latch_pin, :HIGH)
+
+        data
       end
 
       # Returns last known state from +pin+, reads state if unknown
