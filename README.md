@@ -30,6 +30,8 @@ Examples are available in the example directory.
     - [UART Reading and Iterating](#uart-reading-and-iterating)
     - [UART Reading and Iterating in the Background](#uart-reading-and-iterating-in-the-background)
   - [I2C](#i2c)
+    - [I2C Writing](#i2c-writing)
+    - [I2C Reading](#i2c-reading)
     - [LSM303DLHC Example](#lsm303dlhc-example)
   - [SPI](#spi)
     - [MCP3008 Example](#mcp3008-example)
@@ -406,6 +408,9 @@ uart1 = UARTDevice.new(:UART1, 9600)
 
 # Change the speed of a UART device by calling #set_speed
 uart1.set_speed(115200)
+
+# Disable UART device
+uart1.disable
 ```
 
 #### UART Writing
@@ -492,10 +497,86 @@ uart1.run_once_on_each_line(callback)
 uart1.stop_read_wait
 ```
 
-
 ### I2C
+The beaglebone has a number of I2C devices.  These operate at 3.3v.  Do not provide more than 3.3v to the pins or risk damaging the hardware.
+
+To initialize the I2C device **I2C2**, pass the symbol for that device to the **I2CDevice** constructor.
+
+```ruby
+# Initialize I2C device I2C2
+i2c = I2CDevice.new(:I2C2)
+```
+
+#### I2C Writing
+To write to an I2C device, the method **#write** is used.
+
+**#write** takes the following arguments.
+- address: address of slave device
+- data: data to write
+
+#### I2C Reading
+To read from an I2C device, the method **#read** is used.
+
+**#read** takes the following arguments.
+- address: address of slave device
+- bytes: bytes to read
+- register: (optional) register to start reading from
+
+#### LSM303DLHC Example
+
+This example communicates with an [LSM303DLHC](https://www.adafruit.com/products/1120) device.
+
+```ruby
+# Initialize I2C device I2C2
+i2c = I2CDevice.new(:I2C2)
+
+# Put compass into continuous conversation mode
+i2c.write(0x1e, [0x02, 0x00].pack("C*"))
+
+# Enable temperatuer sensor, 15hz register update
+i2c.write(0x1e, [0x00, 0b10010000].pack("C*") )
+
+# Delay for the settings to take effect
+sleep(0.1)
+
+# Read axis data.  It is made up of 3 big endian signed shorts starting at register 0x03
+raw = i2c.read(0x1e, 6, [0x03].pack("C*"))
+
+# Coordinates are big endian signed shorts in x,z,y order
+x,z,y = raw.unpack("s>*")
+
+# Calculate angle of degrees from North
+degrees = (Math::atan2(y, x) * 180) / Math::PI
+degrees += 360 if degrees < 0
+
+# Read 2 byte big endian signed short from temperature register
+raw = i2c.read(0x1e, 2, [0x31].pack("C*"))
+
+# Temperature is sent big endian, least significant digit last
+temp = raw.unpack("s>").first
+
+# Temperature data is 12 bits, last 4 are unused
+temp = temp >> 4
+
+# Each bit is 8c
+temp /= 8
+
+# Correction factor
+temp += 18
+
+# Convert to f
+temp = (temp * 1.8 + 32).to_i
+
+# Output data
+puts "#{Time.now.strftime("%H:%M")}  Temperature: #{temp} degrees f        Direction: #{degrees.to_i} degrees"
+
+# Disable I2C device
+i2c.disable
+```
 
 ### SPI
+
+#### MCP3008 Example
 
 ## Examples (Procedural)
 
