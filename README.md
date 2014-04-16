@@ -209,10 +209,42 @@ shiftreg.shift_out(0b11111111)
 
 
 ### Analog Inputs
-The Analog pins on the Beaglebone run at **1.8v**.  Do not provide more than this voltage to any pin or you will risk damaging the hardware.  The header has pins available to provide a 1.8v for analog devices as well as a dedicated analog ground.
+The Analog pins on the Beaglebone run at **1.8v**.  Do not provide more than this voltage to any pin or you will risk damaging the hardware.  The header has pins available to provide a 1.8v for analog devices as well as a dedicated analog ground.  Analog pins are only capable of reading input values.
+
+To initialize the pin **P9_33**, we pass the symbol for that pin and the mode to the **AINPin** constructor.
+
+```ruby
+# Initialize pin P9_33 for Analog Input
+p9_33 = AINPin.new(:P9_33)
+```
 
 #### Reading
+To read the value from an analog pin, the method **#read** is used.  This will return a value between 0 and 1799.
+
+```ruby
+# Initialize pin P9_33 for Analog Input
+p9_33 = AINPin.new(:P9_33)
+
+# Read the input value in millivolts.
+mv = p9_33.read => 1799
+```
+
 #### Waiting for Change
+If we want to wait for the value of an analog pin to change by a specified voltage, the method **#wait_for_change** is used.
+#wait_for_change takes the following arguments.
+- mv_change: The amount of change in millivolts required before returning
+- interval: How often we poll the value of the pin in seconds
+- mv_last: (optional) The initial value we use as a point to detect change
+This method returns an array containing the initial voltage, the last polled voltage, and the number of times the pin was polled.
+
+```ruby
+# Initialize pin P9_33 for Analog Input
+p9_33 = AINPin.new(:P9_33)
+
+# Wait for 100mv of change on pin P9_33.  Poll 10 times a second
+mv_start, mv_current, count = p9_33.wait_for_change(100, 0.1)
+```
+
 #### Waiting for Threshold
 
 ### PWM
