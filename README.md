@@ -231,7 +231,7 @@ mv = p9_33.read => 1799
 
 #### Waiting for Change
 If we want to wait for the value of an analog pin to change by a specified voltage, the method **#wait_for_change** is used.
-#wait_for_change takes the following arguments.
+\#wait_for_change takes the following arguments.
 - mv_change: The amount of change in millivolts required before returning
 - interval: How often we poll the value of the pin in seconds
 - mv_last: (optional) The initial value we use as a point to detect change
