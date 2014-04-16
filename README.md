@@ -6,7 +6,7 @@ Examples are available in the example directory.
 - [Overview](#overview)
 - [Installation](#installation)
   - [Installing Ruby](#installing-ruby)
-  - [Installing Beaglebone Gem](#installing-gem)
+  - [Installing Beaglebone Gem](#installing-beaglebone-gem)
 - [Usage](#usage)
 - [Reference](#reference)
 - [Examples (Object Oriented)](#examples-object-oriented)
@@ -42,7 +42,7 @@ Ruby and Rubygems are required to use this gem.  To install, simply run the comm
 sudo apt-get install ruby
 ```
 
-### Installing Gem
+### Installing Beaglebone Gem
 Once Ruby is installed installed, you can install the gem by running the command below.
 
 ```
