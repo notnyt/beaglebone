@@ -231,6 +231,7 @@ mv = p9_33.read => 1799
 
 #### Waiting for Change
 If we want to wait for the value of an analog pin to change by a specified voltage, the method **#wait_for_change** is used.
+
 **#wait_for_change** takes the following arguments.
 - mv_change: The amount of change in millivolts required before returning
 - interval: How often we poll the value of the pin in seconds
@@ -246,6 +247,34 @@ mv_start, mv_current, count = p9_33.wait_for_change(100, 0.1)
 ```
 
 #### Waiting for Threshold
+If we want to wait for the value of an analog pin to cross certain threshold voltages, the method **#wait_for_threshold** is used.
+
+**#wait_for_threshold** takes the following arguments.
+- mv_lower: The lower threshold value in millivolts
+- mv_upper: The upper threshold value in millivolts
+- mv_reset: The voltage change required to cross out of the lower or upper threshold ranges.
+- interval: How often we poll the value of the pin in seconds
+- mv_last: (optional) The initial value we use as a point to detect change
+- state_last: (optional) The initial state we use as a point to detect change
+
+Three states are available.
+- :LOW: below or equal to mv_lower
+- :MID: above mv_lower and below mv_upper
+- :HIGH: above or equal to mv_upper
+
+This method returns an array containing the initial voltage, the last polled voltage, the initial state, the last polled state, and the number of times the pin was polled.
+
+```ruby
+# Initialize pin P9_33 for Analog Input
+p9_33 = AINPin.new(:P9_33)
+
+# Wait for the voltage on pin P9_33 to go below 200mv or above 1600mv.  To enter the :MID state from :HIGH or :LOW, it will have to cross the thresholds by at least 100mv.  Poll 10 times a second
+data = p9_33.wait_for_threshold(200, 1600, 100, 0.1) => [ 500, 150, :MID, :LOW, 53 ]
+
+# Assign variables from array
+mv_start, mv_current, state_start, state_current, count = data
+```
+
 
 ### PWM
 
