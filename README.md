@@ -613,7 +613,7 @@ To transfer data to an SPI device, the method **#xfer** is used.
 - delay: (optional) delay
 - bpw: (optonal) bits per word
 
-**#xfer** returns the bytes read from the SPI device.
+**#xfer** returns the data read from the SPI device.
 
 #### MCP3008 Example
 This example communicates with an [MCP3008](http://www.adafruit.com/products/856) ADC device.
