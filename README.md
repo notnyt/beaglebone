@@ -2,7 +2,7 @@
 Documentation is in progress and will be completed shortly.
 Examples are available in the example directory.
 
-****Table of Contents****
+**Table of Contents**
 - [Overview](#overview)
 - [Installation](#installation)
   - [Installing Ruby](#installing-ruby)
