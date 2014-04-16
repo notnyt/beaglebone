@@ -158,6 +158,38 @@ puts "Saw a #{edge} edge"
 ```
 
 #### Edge Triggers in the Background
+If you don't want to block while waiting for an edge trigger, there is a method that will run a callback when an edge trigger is detected.  This method will spawn a new thread and wait for an edge trigger in the background.  You may only have one of these threads active per pin.
+
+```ruby
+# Initialize pin P9_11 in INPUT mode
+p9_11 = GPIOPin.new(:P9_11, :IN)
+
+# Define callback to run when an edge trigger is detected
+# This method takes three arguments.
+# pin: the pin that triggered the event
+# edge: the event that triggered it
+# count: how many times it has been triggered
+callback = lambda { |pin,edge,count| puts "[#{count}] #{pin} #{edge}"}
+
+# Run the callback every time a change in state is detected
+# This method has two additional arguments that are optional.
+# Timeout: How long to wait for an event before terminating the thread
+# Repeats: How many times we will run the event
+# By default, it will run forever every time the specified trigger is detected
+p9_11.run_on_edge(callback, :BOTH)
+
+# This code will run immediately after the previous call, as it does not block
+sleep 10
+
+# Stop the background thread waiting for an edge trigger
+p9_11.stop_edge_wait
+
+# This convenience method will run the callback only on the first detected change
+p9_11.run_once_on_edge(callback, :BOTH)
+
+# Change the trigger detection for the specified pin
+p9_11.set_gpio_edge(:RISING)
+```
 
 #### Shift Registers
 This library will also support writing to shift registers using GPIO pins.  We create a **ShiftRegister** object by initializing it with the latch pin, clock pin, and data pin.
