@@ -693,4 +693,4 @@ SPI.setup(:SPI0)
 ## Pin Reference
 
 ## License
-Copyright (c) 2014 Rob Mosher.  Distributed under the GPL-v3 License.  See [LICENSE] for more information.
+Copyright (c) 2014 Rob Mosher.  Distributed under the GPL-v3 License.  See [LICENSE](license) for more information.
