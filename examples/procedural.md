@@ -37,7 +37,7 @@ The GPIO pins on the Beaglebone run at **3.3v**.  Do not provide more than 3.3v 
 
 GPIO pins have two modes, input and output.  These modes are represented by the symbols **:IN** and **:OUT**.
 
-To initialize the pin **P9_11**, pass the symbol for that pin and the mode to the **GPIOPin** constructor.
+To initialize the pin **P9_11**, pass the symbol for that pin and the mode to the **GPIO.pin_mode** method.
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
