@@ -49,14 +49,14 @@ sudo apt-get install ruby
 ```
 
 ### Installing Beaglebone Gem
-Once Ruby is installed installed, you can install the gem by running the command below.
+Once Ruby is installed installed, install the gem by running the command below.
 
 ```
 sudo gem install beaglebone
 ```
 
 ## Usage
-To use this gem, you need to require it in your Ruby code.  An example follows
+To use this gem, require it in the Ruby script.  An example follows
 
 ```ruby
 #!/usr/bin/env ruby
@@ -71,11 +71,11 @@ A full reference is available [here](http://rubydoc.info/gems/beaglebone/1.0.5/f
 These examples will show the various ways to interact with the Beaglebones IO hardware.  They will need to be executed as root in order to function correctly.
 
 ### GPIO
-The GPIO pins on the Beaglebone run at **3.3v**.  Do not provide more than this voltage to any pin or you will risk damaging the hardware.
+The GPIO pins on the Beaglebone run at **3.3v**.  Do not provide more than this voltage to any pin or risk damaging the hardware.
 
 GPIO pins have two modes, input and output.  These modes are represented by the symbols **:IN** and **:OUT**.
 
-To initialize the pin **P9_11**, we pass the symbol for that pin and the mode to the **GPIOPin** constructor.
+To initialize the pin **P9_11**, pass the symbol for that pin and the mode to the **GPIOPin** constructor.
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
@@ -95,7 +95,7 @@ p9_12 = nil
 ```
 
 #### GPIO Writing
-To set the state of a GPIO pin, the method **#digital_write** is used.  The states we can set are **:HIGH** to provide 3.3v and **:LOW** to provide ground.
+To set the state of a GPIO pin, the method **#digital_write** is used.  The states that can be set are **:HIGH** to provide 3.3v and **:LOW** to provide ground.
 
 ```ruby
 # Initialize pin P9_12 in OUTPUT mode
@@ -146,7 +146,7 @@ end
 ```
 
 #### Edge Triggers
-The Beaglebone can also monitor for changes on a GPIO pin.  This is called an edge trigger.  Since this is interrupt based on the Beaglebone, you can wait for a change without wasting CPU cycles constantly polling the pin.
+The Beaglebone can also monitor for changes on a GPIO pin.  This is called an edge trigger.  Since this is interrupt based on the Beaglebone, waiting for a change does not waste CPU cycles by constantly polling the pin.
 
 The following trigger types are supported
 - Rising: Triggered when the state goes from low to high
@@ -162,7 +162,7 @@ This example will wait for a rising edge to continue, then output the type of ed
 # Initialize pin P9_11 in INPUT mode
 p9_11 = GPIOPin.new(:P9_11, :IN)
 
-# Wait here until we see a rising edge
+# Wait here until a rising edge is detected
 edge = p9_11.wait_for_edge(:RISING) => :RISING
 
 # Output the trigger type detected
@@ -170,7 +170,7 @@ puts "Saw a #{edge} edge"
 ```
 
 #### Edge Triggers in the Background
-If you do not want to block while waiting for an edge trigger, the method **#run_on_edge** will run a callback when an edge trigger is detected.  This method will spawn a new thread and wait for an edge trigger in the background.  You may only have one of these threads active per pin.
+To avoid blocking while waiting for an edge trigger, the method **#run_on_edge** will run a callback when an edge trigger is detected.  This method will spawn a new thread and wait for an edge trigger in the background.  Only one of these threads may be active per pin.
 
 This example will detect edge triggers in the background and output information when triggered.
 
@@ -188,7 +188,7 @@ callback = lambda { |pin,edge,count| puts "[#{count}] #{pin} #{edge}"}
 # Run the callback every time a change in state is detected
 # This method has two additional arguments that are optional.
 # Timeout: How long to wait for an event before terminating the thread
-# Repeats: How many times we will run the event
+# Repeats: How many times to run the event
 # By default, it will run forever every time the specified trigger is detected
 p9_11.run_on_edge(callback, :BOTH)
 
@@ -206,7 +206,7 @@ p9_11.set_gpio_edge(:RISING)
 ```
 
 #### Shift Registers
-This library will also support writing to shift registers using GPIO pins.  We create a **ShiftRegister** object by initializing it with the latch pin, clock pin, and data pin.
+This library will also support writing to shift registers using GPIO pins.  Create a **ShiftRegister** object by initializing it with the latch pin, clock pin, and data pin.
 
 This example will trigger 8 pins of a shift register.
 
@@ -224,9 +224,9 @@ shiftreg.shift_out(0b11111111)
 
 
 ### Analog Inputs
-The Analog pins on the Beaglebone run at **1.8v**.  Do not provide more than this voltage to any pin or you will risk damaging the hardware.  The header has pins available to provide a 1.8v for analog devices as well as a dedicated analog ground.  Analog pins are only capable of reading input values.
+The Analog pins on the Beaglebone run at **1.8v**.  Do not provide more than this voltage to any pin or risk damaging the hardware.  The header has pins available to provide a 1.8v for analog devices as well as a dedicated analog ground.  Analog pins are only capable of reading input values.
 
-To initialize the pin **P9_33**, we pass the symbol for that pin and the mode to the **AINPin** constructor.
+To initialize the pin **P9_33**, pass the symbol for that pin and the mode to the **AINPin** constructor.
 
 ```ruby
 # Initialize pin P9_33 for Analog Input
@@ -245,12 +245,12 @@ mv = p9_33.read => 1799
 ```
 
 #### Waiting for Change
-If we want to wait for the value of an analog pin to change by a specified voltage, the method **#wait_for_change** is used.
+To wait for the value of an analog pin to change by a specified voltage, the method **#wait_for_change** is used.
 
 **#wait_for_change** takes the following arguments.
 - mv_change: The amount of change in millivolts required before returning
-- interval: How often we poll the value of the pin in seconds
-- mv_last: (optional) The initial value we use as a point to detect change
+- interval: How often to poll the value of the pin in seconds
+- mv_last: (optional) The initial value to use as a point to detect change
 
 This method returns an array containing the initial voltage, the last polled voltage, and the number of times the pin was polled.
 
@@ -263,7 +263,7 @@ mv_start, mv_current, count = p9_33.wait_for_change(100, 0.1)
 ```
 
 #### Waiting for Change in the Background
-If you do not want to block while waiting for voltage change, the method **#run_on_change** will run a callback every time the specified change is detected.  This method will spawn a new thread and wait for change in the background.  The method **#run_once_on_change** is a convenience method to only be triggered once.  You may only have one of these threads active per pin.
+To avoid blocking while waiting for voltage change, the method **#run_on_change** will run a callback every time the specified change is detected.  This method will spawn a new thread and wait for change in the background.  The method **#run_once_on_change** is a convenience method to only be triggered once.  Only one of these threads may be active per pin.
 
 This example waits for voltage change in the background and outputs information when change is detected.
 
@@ -281,7 +281,7 @@ callback = lambda { |pin, mv_last, mv, count| puts "[#{count}] #{pin} #{mv_last}
 
 # Run the callback every time the specified voltage change is detected
 # This method has one additional argument that is optional.
-# Repeats: How many times we will run the event
+# Repeats: How many times to will run the event
 # By default, it will run forever every time the specified condition is detected
 # Detect 10mv of change polling 10 times a second.
 p9_33.run_on_change(callback, 10, 0.1)
@@ -294,15 +294,15 @@ p9_33.stop_wait
 ```
 
 #### Waiting for Threshold
-If we want to wait for the value of an analog pin to cross certain threshold voltages, the method **#wait_for_threshold** is used.
+To wait for the value of an analog pin to cross certain threshold voltages, the method **#wait_for_threshold** is used.
 
 **#wait_for_threshold** takes the following arguments.
 - mv_lower: The lower threshold value in millivolts
 - mv_upper: The upper threshold value in millivolts
 - mv_reset: The voltage change required to cross out of the lower or upper threshold ranges.
-- interval: How often we poll the value of the pin in seconds
-- mv_last: (optional) The initial value we use as a point to detect change
-- state_last: (optional) The initial state we use as a point to detect change
+- interval: How often to poll the value of the pin in seconds
+- mv_last: (optional) The initial value to use as a point to detect change
+- state_last: (optional) The initial state to use as a point to detect change
 
 Three states are available.
 - :LOW: below or equal to mv_lower
@@ -325,7 +325,7 @@ mv_start, mv_current, state_start, state_current, count = data
 ```
 
 #### Waiting for Threshold in the Background
-If you do not want to block while waiting for a voltage threshold to be crossed, the method **#run_on_threshold** will run a callback every time the specified change is detected.  This method will spawn a new thread and wait for change in the background.  The method **#run_once_on_threshold** is a convenience method to only be triggered once.  You may only have one of these threads active per pin.
+To avoid blocking while waiting for a voltage threshold to be crossed, the method **#run_on_threshold** will run a callback every time the specified change is detected.  This method will spawn a new thread and wait for change in the background.  The method **#run_once_on_threshold** is a convenience method to only be triggered once.  Only one of these threads may be active per pin.
 
 This example waits for voltage change in the background and outputs information when the specified threshold is crossed.
 
@@ -338,7 +338,7 @@ p9_33 = AINPin.new(:P9_33)
 # pin: The pin that triggered the event
 # mv_last: The initial voltage used to determine change
 # mv: The current voltage on the pin
-# state_last: The initial state we use as a point to detect change
+# state_last: The initial state to use as a point to detect change
 # state: The current state of the pin
 # count: How many times it has been triggered
 callback = lambda { |pin, mv_last, mv, state_last, state, count|
@@ -347,7 +347,7 @@ callback = lambda { |pin, mv_last, mv, state_last, state, count|
 
 # Run the callback every time the specified voltage threshold is crossed
 # This method has one additional argument that is optional.
-# Repeats: How many times we will run the event
+# Repeats: How many times to will run the event
 # By default, it will run forever every time the specified condition is detected
 # Wait for the voltage on pin P9_33 to go below 200mv or above 1600mv.
 # To enter the :MID state from :HIGH or :LOW, it will have to cross the thresholds by at least 100mv.
@@ -365,7 +365,7 @@ p9_33.stop_wait
 ### PWM
 The beaglebone supports PWM (pulse width modulated) output on certain pins.  These pins output 3.3v.  The output is controlled based on frequency and duty cycle.
 
-To initialize the pin **P9_14**, we pass the symbol for that pin, the duty cycle, and the frequency in Hz to the **PWMPin** constructor.
+To initialize the pin **P9_14**, pass the symbol for that pin, the duty cycle, and the frequency in Hz to the **PWMPin** constructor.
 
 This example shows how to control PWM output of a specified pin.
 
@@ -394,17 +394,17 @@ p9_14.disable_pwm_pin
 ```
 
 ### UART
-The beaglebone has a number of UART devices.  These operate in TTL mode at 3.3v.  Do not provide more than 3.3v to the pins or you will risk damaging the hardware.
+The beaglebone has a number of UART devices.  These operate in TTL mode at 3.3v.  Do not provide more than 3.3v to the pins or risk damaging the hardware.
 
 Please note, UART3 does not have an RX pin, and UART5 is only available if the HDMI device tree is not enabled.
 
-To initialize the UART device **UART1**, we pass the symbol for that device and the speed to the **UARTDevice** constructor.
+To initialize the UART device **UART1**, pass the symbol for that device and the speed to the **UARTDevice** constructor.
 
 ```ruby
 # Initialize the pins for device UART1 into UART mode.
 uart1 = UARTDevice.new(:UART1, 9600)
 
-# You can change the speed of a UART device by calling **#set_speed**
+# Change the speed of a UART device by calling #set_speed
 uart1.set_speed(115200)
 ```
 
@@ -439,7 +439,50 @@ line = uart1.readline => "All the text up until the linefeed"
 ```
 
 #### UART Reading and Iterating
+Data read from the UART device may be iterated with the following methods.
+
+```ruby
+# Initialize the pins for device UART1 into UART mode.
+uart1 = UARTDevice.new(:UART1, 9600)
+
+# Run block on every character read from UART1
+uart1.each_char { |c| puts c }
+
+# Run block on every 5 character read from UART1
+uart1.each_char(5) { |str| puts str }
+
+# Run block on each line read from UART1
+uart1.each_line { |line| puts line }
+```
+
 #### UART Reading and Iterating in the Background
+Data read from the UART device may be iterated in the background with the following methods.
+
+```ruby
+# Initialize the pins for device UART1 into UART mode.
+uart1 = UARTDevice.new(:UART1, 9600)
+
+# Define the callback to be run.  It takes 3 arguments
+# uart: the UART device that triggered the callback
+# data: the data read from the UART
+# count: how many times this was triggered
+callback = lambda { |uart, data, count| puts "[#{uart}:#{count}] #{data}" }
+
+# Run callback for every character read
+uart1.run_on_each_char(callback)
+
+# Run callback for every 3 characters read
+uart1.run_on_each_chars(callback, 3)
+#uart1.run_once_on_each_chars(callback, 3)
+#uart1.run_once_on_each_char(callback)
+#uart1.run_on_each_chars(callback, 2)
+
+uart1.run_on_each_line(callback)
+
+
+
+```
+
 
 ### I2C
 

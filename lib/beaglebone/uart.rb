@@ -173,7 +173,7 @@ module Beaglebone #:nodoc:
 
         set_uart_status(uart, :waiting, true)
 
-        data = fd.readline.strip
+        data = fd.readline.chop
 
         set_uart_status(uart, :waiting, false)
 
