@@ -71,7 +71,7 @@ A full reference is available [here](http://rubydoc.info/gems/beaglebone/1.0.5/f
 These examples will show the various ways to interact with the Beaglebones IO hardware.  They will need to be executed as root in order to function correctly.
 
 ### GPIO
-The GPIO pins on the Beaglebone run at **3.3v**.  Do not provide more than this voltage to any pin or risk damaging the hardware.
+The GPIO pins on the Beaglebone run at **3.3v**.  Do not provide more than 3.3v to any GPIO pin or risk damaging the hardware.
 
 GPIO pins have two modes, input and output.  These modes are represented by the symbols **:IN** and **:OUT**.
 
@@ -224,7 +224,7 @@ shiftreg.shift_out(0b11111111)
 
 
 ### Analog Inputs
-The Analog pins on the Beaglebone run at **1.8v**.  Do not provide more than this voltage to any pin or risk damaging the hardware.  The header has pins available to provide a 1.8v for analog devices as well as a dedicated analog ground.  Analog pins are only capable of reading input values.
+The Analog pins on the Beaglebone run at **1.8v**.  Do not provide more than 1.8v to any analog pin or risk damaging the hardware.  The header has pins available to provide a 1.8v for analog devices as well as a dedicated analog ground.  Analog pins are only capable of reading input values.
 
 To initialize the pin **P9_33**, pass the symbol for that pin and the mode to the **AINPin** constructor.
 
@@ -456,7 +456,9 @@ uart1.each_line { |line| puts line }
 ```
 
 #### UART Reading and Iterating in the Background
-Data read from the UART device may be iterated in the background with the following methods.
+Data read from the UART device may be iterated in the background with the following methods.  The data read is passed to the specified callback.  These method will spawn a new thread and wait for data in the background.  Only one of these threads may be active per pin.
+
+This example shows various methods of reading and processing data read from UART1 in the background.
 
 ```ruby
 # Initialize the pins for device UART1 into UART mode.
@@ -473,14 +475,21 @@ uart1.run_on_each_char(callback)
 
 # Run callback for every 3 characters read
 uart1.run_on_each_chars(callback, 3)
-#uart1.run_once_on_each_chars(callback, 3)
-#uart1.run_once_on_each_char(callback)
-#uart1.run_on_each_chars(callback, 2)
 
+# Run callback for every line read
 uart1.run_on_each_line(callback)
 
+# Run callback once after a character is read
+#uart1.run_once_on_each_char(callback)
 
+# Run callback once after 3 characters are read
+uart1.run_once_on_each_chars(callback, 3)
 
+# Run callback once after reading a line
+uart1.run_once_on_each_line(callback)
+
+# Stop the currently running background thread
+uart1.stop_read_wait
 ```
 
 
