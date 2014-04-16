@@ -1,6 +1,5 @@
 # Beaglebone Ruby Library
 Documentation is in progress and will be completed shortly.
-Examples are available in the example directory.
 
 **Table of Contents**
 - [Overview](#overview)
@@ -604,7 +603,7 @@ spi.set_bpw(10)
 spi.disable
 ```
 
-#### SPI Data Tramsfer
+#### SPI Data Transfer
 To transfer data to an SPI device, the method **#xfer** is used.
 
 **#xfer** takes the following arguments
