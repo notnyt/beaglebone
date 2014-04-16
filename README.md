@@ -4,8 +4,8 @@ Documentation is in progress and will be completed shortly.
 **Table of Contents**
 - [Overview](#overview)
 - [Installation](#installation)
-  - [Installing Ruby](#installing-ruby)
-  - [Installing Beaglebone Gem](#installing-beaglebone-gem)
+ - [Installing Ruby](#installing-ruby)
+ - [Installing Beaglebone Gem](#installing-beaglebone-gem)
 - [Usage](#usage)
 - [Pin Reference](#pin-reference)
   - [GPIO Pins](#gpio-pins)
