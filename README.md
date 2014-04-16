@@ -357,6 +357,35 @@ p9_33.stop_wait
 ```
 
 ### PWM
+The beaglebone also supports PWM (pulse width modulated) output on certain pins.  These pins output 3.3v.  The output is controlled based on frequency and duty cycle.
+
+To initialize the pin **P9_14**, we pass the symbol for that pin, the duty cycle, and the frequency in hz to the **PWMPin** constructor.
+
+This example shows how to control PWM output of a specified pin.
+
+```ruby
+# Initialize pin P9_14 for PWM output
+# This pin will now output a square wave at 10hz with a 90% duty cycle.
+p9_14 = PWMPin.new(:P9_14, 90, 10)
+
+# Change frequency to 20hz.  Duty cycle remains 90%
+p9_14.set_frequency(20)
+
+# Change the duty cycle to 50%
+p9_14.set_duty_cycle(50)
+
+# Adjust the frequency by setting the period in nanoseconds.
+p9_14.set_period_ns(31250000)
+
+# Adjust the duty cycle by setting the period in nanoseconds.
+p9_14.set_duty_cycle_ns(31250000)
+
+# Invert the output signal
+p9_14.set_polarity(:INVERTED)
+
+# Disable the output signal
+p9_14.disable_pwm_pin
+```
 
 ### UART
 
