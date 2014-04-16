@@ -34,6 +34,7 @@ Examples are available in the example directory.
     - [I2C Reading](#i2c-reading)
     - [LSM303DLHC Example](#lsm303dlhc-example)
   - [SPI](#spi)
+    - [SPI Data Transfer](#spi-data-transfer)
     - [MCP3008 Example](#mcp3008-example)
 - [Examples (Procedural)](#examples-procedural)
 - [Pin Reference](#pin-reference)
@@ -524,7 +525,7 @@ To read from an I2C device, the method **#read** is used.
 
 #### LSM303DLHC Example
 
-This example communicates with an [LSM303DLHC](https://www.adafruit.com/products/1120) device.
+This example communicates with an [LSM303DLHC](https://www.adafruit.com/products/1120) Accelerometer/Compass/Thermometer device.
 
 ```ruby
 # Initialize I2C device I2C2
@@ -575,8 +576,81 @@ i2c.disable
 ```
 
 ### SPI
+The beaglebone has a number of SPI devices.  These operate at 3.3v.  Do not provide more than 3.3v to the pins or risk damaging the hardware.
+
+To initialize the SPI device **SPI0**, pass the symbol for that device to the **SPIDevice** constructor.
+
+The optional arguments are also available
+- mode: SPI mode, :SPI_MODE_0 through :SPI_MODE_3
+- speed: Speed of the SPI device
+- bpw: Bits per word
+
+```ruby
+# Initialize SPI device SPI0
+spi = SPIDevice.new(:SPI0, :SPI_MODE_0, 1000000, 8)
+
+# You can change SPI  with the methods below.
+
+# Set mode of SPI0
+spi.set_mode(:SPI_MODE_3)
+
+# Set speed of SPI0
+spi.set_speed(100000)
+
+# Set bits per word of SPI0
+spi.set_bpw(10)
+
+# Disable SPI device
+spi.disable
+```
+
+#### SPI Data Tramsfer
+To transfer data to an SPI device, the method **#xfer** is used.
+
+**#xfer** takes the following arguments
+- tx_data: data to transmit
+- readbytes: (optional) number of bytes to read, otherwise it sizeof tx_data is used
+- speed: (optional) speed of the transfer
+- delay: (optional) delay
+- bpw: (optonal) bits per word
+
+**#xfer** returns the bytes read from the SPI device.
 
 #### MCP3008 Example
+This example communicates with an [MCP3008](http://www.adafruit.com/products/856) ADC device.
+
+```ruby
+# Initialize SPI device SPI0
+spi = SPIDevice.new(:SPI0)
+
+# communicate with MCP3008
+# byte 1: start bit
+# byte 2: single(1)/diff(0),3 bites for channel, null pad
+# byte 3: don't care
+# Read value from channel 0
+raw = spi.xfer([ 0b00000001, 0b10000000, 0].pack("C*"))
+
+# split data read into an array of characters
+data = raw.unpack("C*")
+
+# The returned data is stored starting at the last two bits of the second byte
+val = ((data[1] & 0b00000011) << 8 ) | data[2]
+
+# Display the value of channel 0
+puts "Value of channel 0: #{val}"
+
+# Read value from channel 1
+raw = spi.xfer([ 0b00000001, 0b10010000, 0].pack("C*"))
+
+# split data read into an array of characters
+data = raw.unpack("C*")
+
+# The returned data is stored starting at the last two bits of the second byte
+val = ((data[1] & 0b00000011) << 8 ) | data[2]
+
+# Display the value of channel 1
+puts "Value of channel 1: #{val}"
+```
 
 ## Examples (Procedural)
 
