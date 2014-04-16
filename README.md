@@ -20,7 +20,9 @@ Examples are available in the example directory.
   - [Analog Inputs](#analog-inputs)
     - [Reading](#reading)
     - [Waiting for Change](#waiting-for-change)
+    - [Waiting for Change in the Background](#waiting-for-change-in-the-background)
     - [Waiting for Threshold](#waiting-for-threshold)
+    - [Waiting for Threshold in the Background](#waiting-for-Threshold-in-the-background)
   - [PWM](#pwm)
   - [UART](#uart)
   - [I2C](#i2c)
@@ -159,7 +161,7 @@ puts "Saw a #{edge} edge"
 ```
 
 #### Edge Triggers in the Background
-If you don't want to block while waiting for an edge trigger, there is a method that will run a callback when an edge trigger is detected.  This method will spawn a new thread and wait for an edge trigger in the background.  You may only have one of these threads active per pin.
+If you do not want to block while waiting for an edge trigger, the method **#run_on_edge** will run a callback when an edge trigger is detected.  This method will spawn a new thread and wait for an edge trigger in the background.  You may only have one of these threads active per pin.
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
@@ -167,9 +169,9 @@ p9_11 = GPIOPin.new(:P9_11, :IN)
 
 # Define callback to run when an edge trigger is detected
 # This method takes three arguments.
-# pin: the pin that triggered the event
-# edge: the event that triggered it
-# count: how many times it has been triggered
+# pin: The pin that triggered the event
+# edge: The event that triggered it
+# count: How many times it has been triggered
 callback = lambda { |pin,edge,count| puts "[#{count}] #{pin} #{edge}"}
 
 # Run the callback every time a change in state is detected
@@ -182,7 +184,7 @@ p9_11.run_on_edge(callback, :BOTH)
 # This code will run immediately after the previous call, as it does not block
 sleep 10
 
-# Stop the background thread waiting for an edge trigger
+# Stop the background thread waiting for an edge trigger after 10 seconds
 p9_11.stop_edge_wait
 
 # This convenience method will run the callback only on the first detected change
@@ -245,6 +247,34 @@ p9_33 = AINPin.new(:P9_33)
 # Wait for 100mv of change on pin P9_33.  Poll 10 times a second
 mv_start, mv_current, count = p9_33.wait_for_change(100, 0.1)
 ```
+#### Waiting for Change in the Background
+If you do not want to block while waiting for voltage change, the method **#run_on_change** will run a callback when the specified change is detected.  This method will spawn a new thread and wait for change in the background.  You may only have one of these threads active per pin.  The method **#run_once_on_change** is a convenience method to only be triggered once.
+
+```ruby
+# Initialize pin P9_33 for Analog Input
+p9_33 = AINPin.new(:P9_33)
+
+# Define callback to run when an edge trigger is detected
+# This method takes three arguments.
+# pin: The pin that triggered the event
+# mv_last: The initial voltage used to determine change
+# mv: The current voltage on the pin
+# count: How many times it has been triggered
+callback = lambda { |pin, mv_last, mv, count| puts "[#{count}] #{pin} #{mv_last} -> #{mv}" }
+
+# Run the callback every time the specified voltage change is detected
+# This method has one additional argument that is optional.
+# Repeats: How many times we will run the event
+# By default, it will run forever every time the specified condition is detected
+# Detect 10mv of change polling 10 times a second.
+p9_33.run_on_change(callback, 10, 0.1)
+
+# This code will run immediately after the previous call, as it does not block
+sleep 20
+
+# Stop the background thread after 20 seconds
+p9_33.stop_wait
+```
 
 #### Waiting for Threshold
 If we want to wait for the value of an analog pin to cross certain threshold voltages, the method **#wait_for_threshold** is used.
@@ -277,6 +307,41 @@ data = p9_33.wait_for_threshold(200, 1600, 100, 0.1) => [ 500, 150, :MID, :LOW, 
 mv_start, mv_current, state_start, state_current, count = data
 ```
 
+#### Waiting for Threshold in the Background
+If you do not want to block while waiting for a voltage threshold to be crossed, the method **#run_on_threshold** will run a callback when the specified change is detected.  This method will spawn a new thread and wait for change in the background.  You may only have one of these threads active per pin.  The method **#run_once_on_threshold** is a convenience method to only be triggered once.
+
+```ruby
+# Initialize pin P9_33 for Analog Input
+p9_33 = AINPin.new(:P9_33)
+
+# Define callback to run when an edge trigger is detected
+# This method takes three arguments.
+# pin: The pin that triggered the event
+# mv_last: The initial voltage used to determine change
+# mv: The current voltage on the pin
+# state_last: The initial state we use as a point to detect change
+# state: The current state of the pin
+# count: How many times it has been triggered
+callback = lambda { |pin, mv_last, mv, state_last, state, count|
+  puts "[#{count}] #{pin} #{state_last} -> #{state}     #{mv_last} -> #{mv}"
+}
+
+# Run the callback every time the specified voltage threshold is crossed
+# This method has one additional argument that is optional.
+# Repeats: How many times we will run the event
+# By default, it will run forever every time the specified condition is detected
+# Wait for the voltage on pin P9_33 to go below 200mv or above 1600mv.
+# To enter the :MID state from :HIGH or :LOW, it will have to cross the thresholds by at least 100mv.
+# Poll 10 times a second
+# Run callback when state changes
+p9_33.run_on_threshold(callback, 200, 1600, 100, 0.1)
+
+# This code will run immediately after the previous call, as it does not block
+sleep 20
+
+# Stop the background thread after 20 seconds
+p9_33.stop_wait
+```
 
 ### PWM
 
