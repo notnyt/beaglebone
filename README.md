@@ -10,21 +10,23 @@ Examples are available in the example directory.
 - [Usage](#usage)
 - [Reference](#reference)
 - [Examples](#examples)
-  - [GPIO](#gpio)
-    - [LEDs](#leds)
-    - [Reading](#reading)
-    - [Writing](#writing)
-    - [Edge Triggers](#edge-triggers)
-    - [Edge Triggers in the Background](#edge-triggers-in-the-background)
-    - [Shift Registers](#shift-registers)
-  - [Analog Inputs](#analog-inputs)
-    - [Reading](#reading)
-    - [Waiting for Change](#waiting-for-change)
-    - [Waiting for Threshold](#waiting-for-threshold)
-  - [PWM](#pwm)
-  - [UART](#uart)
-  - [I2C](#i2c)
-  - [SPI](#spi)
+  - [Object Oriented Examples](#object-oriented-examples)
+      - [GPIO](#gpio)
+        - [LEDs](#leds)
+        - [Reading](#reading)
+        - [Writing](#writing)
+        - [Edge Triggers](#edge-triggers)
+        - [Edge Triggers in the Background](#edge-triggers-in-the-background)
+        - [Shift Registers](#shift-registers)
+      - [Analog Inputs](#analog-inputs)
+        - [Reading](#reading)
+        - [Waiting for Change](#waiting-for-change)
+        - [Waiting for Threshold](#waiting-for-threshold)
+      - [PWM](#pwm)
+      - [UART](#uart)
+      - [I2C](#i2c)
+      - [SPI](#spi)
+  - [Procedural Examples](#procedural-examples)
 - [Pin Reference](#pin-reference)
 - [License](#license)
 
@@ -61,7 +63,9 @@ A full reference is available [here](http://rubydoc.info/gems/beaglebone/1.0.5/f
 ## Examples
 These examples will show the various ways to interact with the Beaglebones IO hardware.  They will need to be executed as root in order to function correctly.
 
-### GPIO
+### Object Oriented Examples
+
+#### GPIO
 The GPIO pins on the Beaglebone run at **3.3v**.  Do not provide more than this voltage to any pin or you will risk damaging the hardware.
 
 GPIO pins have two modes, input and output.  These modes are represented by the symbols **:IN** and **:OUT**.
@@ -84,7 +88,7 @@ p9_12.disable_gpio_pin
 p9_12 = nil
 ```
 
-#### Writing
+##### Writing
 To set the state of a GPIO pin, the method **#digital_write** is used.  The states we can set are **:HIGH** to provide 3.3v and **:LOW** to provide ground.
 
 ```ruby
@@ -98,7 +102,7 @@ p9_12.digital_write(:HIGH)
 p9_12.digital_write(:LOW)
 ```
 
-#### Reading
+##### Reading
 To read the current state of a GPIO pin, the method **#digital_read** is used.  It will return the symbol **:HIGH** or **:LOW** depending on the state of the pin.
 
 ```ruby
@@ -109,7 +113,7 @@ p9_11 = GPIOPin.new(:P9_11, :IN)
 state = p9_11.digital_read => :LOW
 ```
 
-#### LEDs
+##### LEDs
 The on-board LEDs are addressable via GPIO output.  They are available on pins **:USR0** through **:USR3**.  This example will blink each LED in order 5 times.
 
 ```ruby
@@ -133,7 +137,7 @@ led4 = GPIOPin.new(:USR3, :OUT)
 end
 ```
 
-#### Edge Triggers
+##### Edge Triggers
 The Beaglebone can also monitor for changes on a GPIO pin.  This is called an edge trigger.  Since this is interrupt based on the Beaglebone, you can wait for a change without wasting CPU cycles constantly polling the pin.
 
 The following trigger types are supported
@@ -157,7 +161,7 @@ edge = p9_11.wait_for_edge(:RISING) => :RISING
 puts "Saw a #{edge} edge"
 ```
 
-#### Edge Triggers in the Background
+##### Edge Triggers in the Background
 If you don't want to block while waiting for an edge trigger, there is a method that will run a callback when an edge trigger is detected.  This method will spawn a new thread and wait for an edge trigger in the background.  You may only have one of these threads active per pin.
 
 ```ruby
@@ -191,7 +195,7 @@ p9_11.run_once_on_edge(callback, :BOTH)
 p9_11.set_gpio_edge(:RISING)
 ```
 
-#### Shift Registers
+##### Shift Registers
 This library will also support writing to shift registers using GPIO pins.  We create a **ShiftRegister** object by initializing it with the latch pin, clock pin, and data pin.
 
 ```ruby
@@ -207,20 +211,20 @@ shiftreg.shift_out(0b11111111)
 ```
 
 
-### Analog Inputs
+#### Analog Inputs
 The Analog pins on the Beaglebone run at **1.8v**.  Do not provide more than this voltage to any pin or you will risk damaging the hardware.  The header has pins available to provide a 1.8v for analog devices as well as a dedicated analog ground.
 
-#### Reading
-#### Waiting for Change
-#### Waiting for Threshold
+##### Reading
+##### Waiting for Change
+##### Waiting for Threshold
 
-### PWM
+#### PWM
 
-### UART
+#### UART
 
-### I2C
+#### I2C
 
-### SPI
+#### SPI
 
 ## Pin Reference
 
