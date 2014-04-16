@@ -11,9 +11,9 @@ Examples are available in the example directory.
 - [Reference](#reference)
 - [Examples (Object Oriented)](#examples-object-oriented)
   - [GPIO](#gpio)
-    - [LEDs](#leds)
-    - [Reading](#reading)
     - [Writing](#writing)
+    - [Reading](#reading)
+    - [LEDs](#leds)
     - [Edge Triggers](#edge-triggers)
     - [Edge Triggers in the Background](#edge-triggers-in-the-background)
     - [Shift Registers](#shift-registers)
@@ -357,7 +357,7 @@ p9_33.stop_wait
 ```
 
 ### PWM
-The beaglebone also supports PWM (pulse width modulated) output on certain pins.  These pins output 3.3v.  The output is controlled based on frequency and duty cycle.
+The beaglebone supports PWM (pulse width modulated) output on certain pins.  These pins output 3.3v.  The output is controlled based on frequency and duty cycle.
 
 To initialize the pin **P9_14**, we pass the symbol for that pin, the duty cycle, and the frequency in Hz to the **PWMPin** constructor.
 
