@@ -629,7 +629,7 @@ spi = SPIDevice.new(:SPI0)
 # Read value from channel 0
 raw = spi.xfer([ 0b00000001, 0b10000000, 0].pack("C*"))
 
-# split data read into an array of characters
+# Split data read into an array of characters
 data = raw.unpack("C*")
 
 # The returned data is stored starting at the last two bits of the second byte
@@ -641,7 +641,7 @@ puts "Value of channel 0: #{val}"
 # Read value from channel 1
 raw = spi.xfer([ 0b00000001, 0b10010000, 0].pack("C*"))
 
-# split data read into an array of characters
+# Split data read into an array of characters
 data = raw.unpack("C*")
 
 # The returned data is stored starting at the last two bits of the second byte
