@@ -1,4 +1,5 @@
 TODO: convert this to procedural methods.
+
 **Table of Contents**
 - [Examples (Procedural)](#examples-procedural)
   - [GPIO](#gpio)
@@ -40,19 +41,16 @@ To initialize the pin **P9_11**, pass the symbol for that pin and the mode to th
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
-p9_11 = GPIOPin.new(:P9_11, :IN)
+GPIO.pin_mode(:P9_11, :IN)
 
 # Initialize pin P9_12 in OUTPUT mode
-p9_12 = GPIOPin.new(:P9_12, :OUT)
+GPIO.pin_mode(:P9_12, :OUT)
 
 # Change pin P9_12 to INPUT mode
-p9_12.set_gpio_mode(:IN)
+GPIO.set_gpio_mode(:P9_12, :IN)
 
 # Disable pin P9_12
-p9_12.disable_gpio_pin
-
-# Unassign to prevent re-use
-p9_12 = nil
+GPIO.disable_gpio_pin(:P9_12)
 ```
 
 #### GPIO Writing
@@ -60,13 +58,13 @@ To set the state of a GPIO pin, the method **#digital_write** is used.  The stat
 
 ```ruby
 # Initialize pin P9_12 in OUTPUT mode
-p9_12 = GPIOPin.new(:P9_12, :OUT)
+GPIO.pin_mode(:P9_12, :OUT)
 
 # Provide 3.3v on pin P9_12
-p9_12.digital_write(:HIGH)
+GPIO.digital_write(:P9_12, :HIGH)
 
 # Provide ground on pin P9_12
-p9_12.digital_write(:LOW)
+GPIO.digital_write(:P9_12, :LOW)
 ```
 
 #### GPIO Reading
@@ -74,10 +72,10 @@ To read the current state of a GPIO pin, the method **#digital_read** is used.  
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
-p9_11 = GPIOPin.new(:P9_11, :IN)
+GPIO.pin_mode(:P9_11, :IN)
 
 # Get the current state of P9_11
-state = p9_11.digital_read => :LOW
+state = GPIO.digital_read(:P9_11) => :LOW
 ```
 
 #### LEDs
@@ -86,22 +84,23 @@ The on-board LEDs are addressable via GPIO output.  They are available on pins *
 This example will blink each LED in order 5 times.
 
 ```ruby
-# Create an led object for each LED
-led1 = GPIOPin.new(:USR0, :OUT)
-led2 = GPIOPin.new(:USR1, :OUT)
-led3 = GPIOPin.new(:USR2, :OUT)
-led4 = GPIOPin.new(:USR3, :OUT)
+# Initialize each LED pin
+leds = [ :USR0, :USR1, :USR2, :USR3 ]
+leds.each do |ledpin|
+  GPIO.pin_mode(ledpin, :OUT)
+end
+
 
 # Run the following block 5 times
 5.times do
   # Iterate over each LED
-  [led1,led2,led3,led4].each do |led|
+  leds.each do |ledpin|
     # Turn on the LED
-    led.digital_write(:HIGH)
+    GPIO.digital_write(ledpin, :LOW)
     # Delay 0.25 seconds
     sleep 0.25
     # Turn off the LED
-    led.digital_write(:LOW)
+    GPIO.digital_write(ledpin, :HIGH)
   end
 end
 ```
