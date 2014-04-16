@@ -268,7 +268,9 @@ This method returns an array containing the initial voltage, the last polled vol
 # Initialize pin P9_33 for Analog Input
 p9_33 = AINPin.new(:P9_33)
 
-# Wait for the voltage on pin P9_33 to go below 200mv or above 1600mv.  To enter the :MID state from :HIGH or :LOW, it will have to cross the thresholds by at least 100mv.  Poll 10 times a second
+# Wait for the voltage on pin P9_33 to go below 200mv or above 1600mv.
+# To enter the :MID state from :HIGH or :LOW, it will have to cross the thresholds by at least 100mv.
+# Poll 10 times a second
 data = p9_33.wait_for_threshold(200, 1600, 100, 0.1) => [ 500, 150, :MID, :LOW, 53 ]
 
 # Assign variables from array
