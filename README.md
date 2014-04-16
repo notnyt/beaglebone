@@ -15,6 +15,7 @@ Examples are available in the example directory.
     - [Reading](#reading)
     - [Writing](#writing)
     - [Edge Triggers](#edge-triggers)
+    - [Edge Triggers in the Background](#edge-triggers-in-the-background)
     - [Shift Registers](#shift-registers)
   - [Analog Inputs](#analog-inputs)
     - [Reading](#reading)
@@ -138,7 +139,7 @@ The Beaglebone can also monitor for changes on a GPIO pin.  This is called an ed
 The following trigger types are supported
 - Rising: Triggered when the state goes from low to high
 - Falling: Triggered when the state goes from high to low
-- Both: Triggered at any change in stae
+- Both: Triggered at any change in state
 - None: Triggering is disabled
 
 These trigger types are represented by the symbols :RISING, :FALLING, :BOTH, and :NONE
@@ -155,6 +156,8 @@ edge = p9_11.wait_for_edge(:RISING) => :RISING
 # Output the trigger type detected
 puts "Saw a #{edge} edge"
 ```
+
+#### Edge Triggers in the Background
 
 #### Shift Registers
 This library will also support writing to shift registers using GPIO pins.  We create a **ShiftRegister** object by initializing it with the latch pin, clock pin, and data pin.
