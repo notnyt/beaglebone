@@ -422,7 +422,7 @@ uart1.writeln("A line feed follows")
 ```
 
 #### UART Reading
-There are many methods available for reading from UART devices.
+There are many methods available for reading from UART devices.  These are blocking methods and will not return until the requested is available.
 
 ```ruby
 # Initialize the pins for device UART1 into UART mode.
@@ -439,7 +439,7 @@ line = uart1.readline => "All the text up until the linefeed"
 ```
 
 #### UART Reading and Iterating
-Data read from the UART device may be iterated with the following methods.
+Data read from the UART device may be iterated with the following methods.  These are blocking methods and will run until the loop is broken.
 
 ```ruby
 # Initialize the pins for device UART1 into UART mode.
