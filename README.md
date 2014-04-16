@@ -238,6 +238,7 @@ If we want to wait for the value of an analog pin to change by a specified volta
 - mv_change: The amount of change in millivolts required before returning
 - interval: How often we poll the value of the pin in seconds
 - mv_last: (optional) The initial value we use as a point to detect change
+
 This method returns an array containing the initial voltage, the last polled voltage, and the number of times the pin was polled.
 
 ```ruby
