@@ -66,7 +66,7 @@ require 'beaglebone'
 include Beaglebone
 ```
 
-## Rereference
+## Reference
 A full reference is available [here](http://rubydoc.info/gems/beaglebone/1.0.5/frames).
 
 ## Examples (Object Oriented)
@@ -391,6 +391,12 @@ p9_14.set_duty_cycle_ns(31250000)
 # Invert the output signal
 p9_14.set_polarity(:INVERTED)
 
+# Stop the output signal
+p9_14.stop
+
+# Resume the output signal
+p9_14.run
+
 # Disable the output signal
 p9_14.disable_pwm_pin
 ```
@@ -649,10 +655,40 @@ val = ((data[1] & 0b00000011) << 8 ) | data[2]
 
 # Display the value of channel 1
 puts "Value of channel 1: #{val}"
+
+# Disable SPI device
+spi.disable
 ```
 
 ## Examples (Procedural)
+This library also supports procedural methods.  They are virtually identical to the Object Oriented methods, except the first argument they take is the pin.  If a callback is required, it is still passed first, before the pin.  The examples directory has sample code in both formats.
 
+To see the object oriented examples above converteed to procedural methods, please view the file [README.procedural.md]()
+
+Instead of constructors, the following methods are used to initialize the pins and devices on the Beaglebone.
+
+```ruby
+# GPIOPin.new becomes
+GPIO.pin_mode(:P9_12, :OUT)
+
+# To set the state of the pin
+GPIO.digital_write(:P9_12, :OUT)
+
+# Analog pins do not require setup, we can read at any time
+AIN.read(:P9_33)
+
+# PWMPin.new becomes
+PWM.start(:P9_14, 90, 10, :NORMAL)
+
+# UARTDevice.new becomes
+UART.setup(:UART1, 9600)
+
+# I2CDevice.new becomes
+I2C.setup(:I2C2)
+
+# SPIDevice.new becomes
+SPI.setup(:SPI0)
+```
 
 ## Pin Reference
 
