@@ -663,7 +663,7 @@ spi.disable
 ## Examples (Procedural)
 This library also supports procedural methods.  They are virtually identical to the Object Oriented methods, except the first argument they take is the pin.  If a callback is required, it is still passed first, before the pin.  The examples directory has sample code in both formats.
 
-To see the object oriented examples above converted to procedural methods, please view the file [examples/procedural.md](examples/procedural.md)
+To see the procedural versions of the object oriented examples above, please view the file [examples/procedural.md](examples/procedural.md)
 
 Instead of constructors, the following methods are used to initialize the pins and devices on the Beaglebone.
 
