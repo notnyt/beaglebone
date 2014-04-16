@@ -61,11 +61,11 @@ A full reference is available [here](http://rubydoc.info/gems/beaglebone/1.0.5/f
 These examples will show the various ways to interact with the Beaglebones IO hardware.  They will need to be executed as root in order to function correctly.
 
 ### GPIO
-The GPIO pins on the Beaglebone run at 3.3v.  Do not provide more than this voltage to any pin.
+The GPIO pins on the Beaglebone run at 3.3v.  Do not provide more than this voltage to any pin or you will risk damaging the hardware.
 
-GPIO pins have two modes, input and output.  These modes are represented by the symbols :IN and :OUT.
+GPIO pins have two modes, input and output.  These modes are represented by the symbols *:IN* and *:OUT*.
 
-To initialize the pin P9_11, we pass the symbol for that pin and the mode to the GPIOPin constructor.
+To initialize the pin *P9_11*, we pass the symbol for that pin and the mode to the *GPIOPin* constructor.
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
@@ -84,7 +84,7 @@ p9_12 = nil
 ```
 
 #### Writing
-To set the state of a GPIO pin, the method #digital_write is used.  The states we can set are :HIGH to provide 3.3v and :LOW to provide ground.
+To set the state of a GPIO pin, the method *#digital_write* is used.  The states we can set are *:HIGH* to provide 3.3v and *:LOW* to provide ground.
 
 ```ruby
 # Initialize pin P9_12 in OUTPUT mode
@@ -98,7 +98,7 @@ p9_12.digital_write(:LOW)
 ```
 
 #### Reading
-To read the current state of a GPIO pin, the method #digital_read is used.  It will return the symbol :HIGH or :LOW depending on the state of the pin.
+To read the current state of a GPIO pin, the method *#digital_read* is used.  It will return the symbol *:HIGH* or *:LOW* depending on the state of the pin.
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
@@ -109,7 +109,7 @@ state = p9_11.digital_read => :LOW
 ```
 
 #### LEDs
-The on-board LEDs are addressable via GPIO output.  They are available on pins :USR0 through :USR3.  This example will blink each LED in order 5 times.
+The on-board LEDs are addressable via GPIO output.  They are available on pins *:USR0* through *:USR3*.  This example will blink each LED in order 5 times.
 
 ```ruby
 # Create an led object for each LED
@@ -133,7 +133,7 @@ end
 ```
 
 #### Shift Registers
-This library will also support writing to shift registers using GPIO pins.  We create a ShiftRegister object by initializing it with the latch pin, clock pin, and data pin.
+This library will also support writing to shift registers using GPIO pins.  We create a *ShiftRegister* object by initializing it with the latch pin, clock pin, and data pin.
 
 ```ruby
 # P9_11 is connected to the latch pin
