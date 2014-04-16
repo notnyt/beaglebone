@@ -249,7 +249,7 @@ p9_33 = AINPin.new(:P9_33)
 mv_start, mv_current, count = p9_33.wait_for_change(100, 0.1)
 ```
 #### Waiting for Change in the Background
-If you do not want to block while waiting for voltage change, the method **#run_on_change** will run a callback when the specified change is detected.  This method will spawn a new thread and wait for change in the background.  You may only have one of these threads active per pin.  The method **#run_once_on_change** is a convenience method to only be triggered once.
+If you do not want to block while waiting for voltage change, the method **#run_on_change** will run a callback every time the specified change is detected.  This method will spawn a new thread and wait for change in the background.  The method **#run_once_on_change** is a convenience method to only be triggered once.  You may only have one of these threads active per pin.
 
 ```ruby
 # Initialize pin P9_33 for Analog Input
@@ -309,7 +309,7 @@ mv_start, mv_current, state_start, state_current, count = data
 ```
 
 #### Waiting for Threshold in the Background
-If you do not want to block while waiting for a voltage threshold to be crossed, the method **#run_on_threshold** will run a callback when the specified change is detected.  This method will spawn a new thread and wait for change in the background.  You may only have one of these threads active per pin.  The method **#run_once_on_threshold** is a convenience method to only be triggered once.
+If you do not want to block while waiting for a voltage threshold to be crossed, the method **#run_on_threshold** will run a callback every time the specified change is detected.  This method will spawn a new thread and wait for change in the background.  The method **#run_once_on_threshold** is a convenience method to only be triggered once.  You may only have one of these threads active per pin.
 
 ```ruby
 # Initialize pin P9_33 for Analog Input
