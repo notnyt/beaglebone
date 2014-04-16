@@ -168,7 +168,7 @@ If you do not want to block while waiting for an edge trigger, the method **#run
 p9_11 = GPIOPin.new(:P9_11, :IN)
 
 # Define callback to run when an edge trigger is detected
-# This method takes three arguments.
+# This method takes 3 arguments.
 # pin: The pin that triggered the event
 # edge: The event that triggered it
 # count: How many times it has been triggered
@@ -254,8 +254,8 @@ If you do not want to block while waiting for voltage change, the method **#run_
 # Initialize pin P9_33 for Analog Input
 p9_33 = AINPin.new(:P9_33)
 
-# Define callback to run when an edge trigger is detected
-# This method takes three arguments.
+# Define callback to run when condition is met
+# This method takes 4 arguments.
 # pin: The pin that triggered the event
 # mv_last: The initial voltage used to determine change
 # mv: The current voltage on the pin
@@ -314,8 +314,8 @@ If you do not want to block while waiting for a voltage threshold to be crossed,
 # Initialize pin P9_33 for Analog Input
 p9_33 = AINPin.new(:P9_33)
 
-# Define callback to run when an edge trigger is detected
-# This method takes three arguments.
+# Define callback to run when condition is met
+# This method takes 6 arguments.
 # pin: The pin that triggered the event
 # mv_last: The initial voltage used to determine change
 # mv: The current voltage on the pin
