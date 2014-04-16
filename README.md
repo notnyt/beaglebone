@@ -480,7 +480,7 @@ uart1.run_on_each_chars(callback, 3)
 uart1.run_on_each_line(callback)
 
 # Run callback once after a character is read
-#uart1.run_once_on_each_char(callback)
+uart1.run_once_on_each_char(callback)
 
 # Run callback once after 3 characters are read
 uart1.run_once_on_each_chars(callback, 3)
