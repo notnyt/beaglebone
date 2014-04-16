@@ -83,6 +83,7 @@ p9_12.set_gpio_mode(:IN)
 
 # Disable pin P9_12
 p9_12.disable_gpio_pin
+
 # Unassign to prevent re-use
 p9_12 = nil
 ```
@@ -113,7 +114,9 @@ state = p9_11.digital_read => :LOW
 ```
 
 #### LEDs
-The on-board LEDs are addressable via GPIO output.  They are available on pins **:USR0** through **:USR3**.  This example will blink each LED in order 5 times.
+The on-board LEDs are addressable via GPIO output.  They are available on pins **:USR0** through **:USR3**.
+
+This example will blink each LED in order 5 times.
 
 ```ruby
 # Create an led object for each LED
@@ -147,7 +150,7 @@ The following trigger types are supported
 
 These trigger types are represented by the symbols :RISING, :FALLING, :BOTH, and :NONE
 
-This example will wait for a rising edge to continue.
+This example will wait for a rising edge to continue, then output the type of edge trigger that was detected.
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
@@ -162,6 +165,8 @@ puts "Saw a #{edge} edge"
 
 #### Edge Triggers in the Background
 If you do not want to block while waiting for an edge trigger, the method **#run_on_edge** will run a callback when an edge trigger is detected.  This method will spawn a new thread and wait for an edge trigger in the background.  You may only have one of these threads active per pin.
+
+This example will detect edge triggers in the background and output information when triggered.
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
@@ -196,6 +201,8 @@ p9_11.set_gpio_edge(:RISING)
 
 #### Shift Registers
 This library will also support writing to shift registers using GPIO pins.  We create a **ShiftRegister** object by initializing it with the latch pin, clock pin, and data pin.
+
+This example will trigger 8 pins of a shift register.
 
 ```ruby
 # P9_11 is connected to the latch pin
@@ -248,8 +255,11 @@ p9_33 = AINPin.new(:P9_33)
 # Wait for 100mv of change on pin P9_33.  Poll 10 times a second
 mv_start, mv_current, count = p9_33.wait_for_change(100, 0.1)
 ```
+
 #### Waiting for Change in the Background
 If you do not want to block while waiting for voltage change, the method **#run_on_change** will run a callback every time the specified change is detected.  This method will spawn a new thread and wait for change in the background.  The method **#run_once_on_change** is a convenience method to only be triggered once.  You may only have one of these threads active per pin.
+
+This example waits for voltage change in the background and outputs information when change is detected.
 
 ```ruby
 # Initialize pin P9_33 for Analog Input
@@ -310,6 +320,8 @@ mv_start, mv_current, state_start, state_current, count = data
 
 #### Waiting for Threshold in the Background
 If you do not want to block while waiting for a voltage threshold to be crossed, the method **#run_on_threshold** will run a callback every time the specified change is detected.  This method will spawn a new thread and wait for change in the background.  The method **#run_once_on_threshold** is a convenience method to only be triggered once.  You may only have one of these threads active per pin.
+
+This example waits for voltage change in the background and outputs information when the specified threshold is crossed.
 
 ```ruby
 # Initialize pin P9_33 for Analog Input
