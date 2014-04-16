@@ -11,8 +11,8 @@ Examples are available in the example directory.
 - [Reference](#reference)
 - [Examples (Object Oriented)](#examples-object-oriented)
   - [GPIO](#gpio)
-    - [Writing](#writing)
-    - [Reading](#reading)
+    - [GPIO Writing](#gpio-writing)
+    - [GPIO Reading](#gpio-reading)
     - [LEDs](#leds)
     - [Edge Triggers](#edge-triggers)
     - [Edge Triggers in the Background](#edge-triggers-in-the-background)
@@ -25,8 +25,14 @@ Examples are available in the example directory.
     - [Waiting for Threshold in the Background](#waiting-for-Threshold-in-the-background)
   - [PWM](#pwm)
   - [UART](#uart)
+    - [UART Writing](#uart-writing)
+    - [UART Reading](#uart-reading)
+    - [UART Reading and Iterating](#uart-reading-and-iterating)
+    - [UART Reading and Iterating in the Background](#uart-reading-and-iterating-in-the-background)
   - [I2C](#i2c)
+    - [LSM303DLHC Example](#lsm303dlhc-example)
   - [SPI](#spi)
+    - [MCP3008 Example](#mcp3008-example)
 - [Examples (Procedural)](#examples-procedural)
 - [Pin Reference](#pin-reference)
 - [License](#license)
@@ -88,7 +94,7 @@ p9_12.disable_gpio_pin
 p9_12 = nil
 ```
 
-#### Writing
+#### GPIO Writing
 To set the state of a GPIO pin, the method **#digital_write** is used.  The states we can set are **:HIGH** to provide 3.3v and **:LOW** to provide ground.
 
 ```ruby
@@ -102,7 +108,7 @@ p9_12.digital_write(:HIGH)
 p9_12.digital_write(:LOW)
 ```
 
-#### Reading
+#### GPIO Reading
 To read the current state of a GPIO pin, the method **#digital_read** is used.  It will return the symbol **:HIGH** or **:LOW** depending on the state of the pin.
 
 ```ruby
@@ -388,6 +394,52 @@ p9_14.disable_pwm_pin
 ```
 
 ### UART
+The beaglebone has a number of UART devices.  These operate in TTL mode at 3.3v.  Do not provide more than 3.3v to the pins or you will risk damaging the hardware.
+
+Please note, UART3 does not have an RX pin, and UART5 is only available if the HDMI device tree is not enabled.
+
+To initialize the UART device **UART1**, we pass the symbol for that device and the speed to the **UARTDevice** constructor.
+
+```ruby
+# Initialize the pins for device UART1 into UART mode.
+uart1 = UARTDevice.new(:UART1, 9600)
+
+# You can change the speed of a UART device by calling **#set_speed**
+uart1.set_speed(115200)
+```
+
+#### UART Writing
+Writing to a UART device is accomplished by calling the **#write** or **#writeln** methods
+```ruby
+# Initialize the pins for device UART1 into UART mode.
+uart1 = UARTDevice.new(:UART1, 9600)
+
+# Write data to a UART1
+uart1.write("DATA DATA DATA!")
+
+# Write data to UART1 followed by a line feed
+uart1.writeln("A line feed follows")
+```
+
+#### UART Reading
+There are many methods available for reading from UART devices.
+
+```ruby
+# Initialize the pins for device UART1 into UART mode.
+uart1 = UARTDevice.new(:UART1, 9600)
+
+# Read one character from UART1
+c = uart1.readchar => "X"
+
+# Read 10 characters from UART1
+str = uart1.readchars(10) => "0123456789"
+
+# Read a line from UART1
+line = uart1.readline => "All the text up until the linefeed"
+```
+
+#### UART Reading and Iterating
+#### UART Reading and Iterating in the Background
 
 ### I2C
 
