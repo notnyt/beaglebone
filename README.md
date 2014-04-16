@@ -7,7 +7,14 @@ Documentation is in progress and will be completed shortly.
   - [Installing Ruby](#installing-ruby)
   - [Installing Beaglebone Gem](#installing-beaglebone-gem)
 - [Usage](#usage)
-- [Reference](#reference)
+- [Pin Reference](#pin-reference)
+  - [GPIO Pins](#gpio-pins)
+  - [Analog Pins](#analog-pins)
+  - [PWM Pins](#pwm-pins)
+  - [UART Pins](#uart-pins)
+  - [I2C Pins](#i2c-pins)
+  - [SPI Pins](#spi-pins)
+- [Source Code Reference](#source-code-reference)
 - [Examples (Object Oriented)](#examples-object-oriented)
   - [GPIO](#gpio)
     - [GPIO Writing](#gpio-writing)
@@ -36,7 +43,6 @@ Documentation is in progress and will be completed shortly.
     - [SPI Data Transfer](#spi-data-transfer)
     - [MCP3008 Example](#mcp3008-example)
 - [Examples (Procedural)](#examples-procedural)
-- [Pin Reference](#pin-reference)
 - [License](#license)
 
 ## Overview
@@ -66,8 +72,16 @@ require 'beaglebone'
 include Beaglebone
 ```
 
-## Reference
-A full reference is available [here](http://rubydoc.info/gems/beaglebone/1.0.5/frames).
+## Pin Reference
+### GPIO Pins
+### Analog Pins
+### PWM Pins
+### UART Pins
+### I2C Pins
+### SPI Pins
+
+## Source Code Reference
+A full Source Code reference is available [here](http://rubydoc.info/gems/beaglebone/1.0.5/frames).
 
 ## Examples (Object Oriented)
 These examples will show the various ways to interact with the Beaglebones IO hardware.  They will need to be executed as root in order to function correctly.
@@ -689,8 +703,6 @@ I2C.setup(:I2C2)
 # SPIDevice.new becomes
 SPI.setup(:SPI0)
 ```
-
-## Pin Reference
 
 ## License
 Copyright (c) 2014 Rob Mosher.  Distributed under the GPL-v3 License.  See [LICENSE](LICENSE) for more information.
