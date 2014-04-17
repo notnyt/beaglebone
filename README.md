@@ -91,8 +91,11 @@ The beaglebone has 8 PWM pins.  These pins function at 3.3v.
 Not all 8 pins may be used at the same time. You may use the following pins.
 
 P8_13 or P8_19
+
 P9_14 or P9_16
+
 P9_21 or P9_22
+
 P9_28 and P9_42
 
 ### UART Pins
