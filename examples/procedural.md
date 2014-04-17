@@ -54,7 +54,7 @@ GPIO.disable_gpio_pin(:P9_12)
 ```
 
 #### GPIO Writing
-To set the state of a GPIO pin, the method **#digital_write** is used.  The states that can be set are **:HIGH** to provide 3.3v and **:LOW** to provide ground.
+To set the state of a GPIO pin, the method **GPIO.digital_write** is used.  The states that can be set are **:HIGH** to provide 3.3v and **:LOW** to provide ground.
 
 ```ruby
 # Initialize pin P9_12 in OUTPUT mode
@@ -68,7 +68,7 @@ GPIO.digital_write(:P9_12, :LOW)
 ```
 
 #### GPIO Reading
-To read the current state of a GPIO pin, the method **#digital_read** is used.  It will return the symbol **:HIGH** or **:LOW** depending on the state of the pin.
+To read the current state of a GPIO pin, the method **GPIO.digital_read** is used.  It will return the symbol **:HIGH** or **:LOW** depending on the state of the pin.
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
@@ -130,7 +130,7 @@ puts "Saw a #{edge} edge"
 ```
 
 #### Edge Triggers in the Background
-To avoid blocking while waiting for an edge trigger, the method **#run_on_edge** will run a callback when an edge trigger is detected.  This method will spawn a new thread and wait for an edge trigger in the background.  Only one of these threads may be active per pin.
+To avoid blocking while waiting for an edge trigger, the method **GPIO.run_on_edge** will run a callback when an edge trigger is detected.  This method will spawn a new thread and wait for an edge trigger in the background.  Only one of these threads may be active per pin.
 
 This example will detect edge triggers in the background and output information when triggered.
 
@@ -190,7 +190,7 @@ The Analog pins on the Beaglebone run at **1.8v**.  Do not provide more than 1.8
 Analog pins do not require setup, and can be read at any time
 
 #### Reading
-To read the value from an analog pin, the method **#read** is used.  This will return a value between 0 and 1799.
+To read the value from an analog pin, the method **AIN.read** is used.  This will return a value between 0 and 1799.
 
 ```ruby
 # Read the input value in millivolts.
@@ -198,9 +198,9 @@ mv = AIN.read(:P9_33) => 1799
 ```
 
 #### Waiting for Change
-To wait for the value of an analog pin to change by a specified voltage, the method **#wait_for_change** is used.
+To wait for the value of an analog pin to change by a specified voltage, the method **AIN.wait_for_change** is used.
 
-**#wait_for_change** takes the following arguments.
+**AIN.wait_for_change** takes the following arguments.
 - pin: The symbol of the pin to monitor
 - mv_change: The amount of change in millivolts required before returning
 - interval: How often to poll the value of the pin in seconds
@@ -214,7 +214,7 @@ mv_start, mv_current, count = AIN.wait_for_change(:P9_33, 100, 0.1)
 ```
 
 #### Waiting for Change in the Background
-To avoid blocking while waiting for voltage change, the method **#run_on_change** will run a callback every time the specified change is detected.  This method will spawn a new thread and wait for change in the background.  The method **#run_once_on_change** is a convenience method to only be triggered once.  Only one of these threads may be active per pin.
+To avoid blocking while waiting for voltage change, the method **AIN.run_on_change** will run a callback every time the specified change is detected.  This method will spawn a new thread and wait for change in the background.  The method **AIN.run_once_on_change** is a convenience method to only be triggered once.  Only one of these threads may be active per pin.
 
 This example waits for voltage change in the background and outputs information when change is detected.
 
@@ -243,9 +243,9 @@ AIN.stop_wait(:P9_33)
 ```
 
 #### Waiting for Threshold
-To wait for the value of an analog pin to cross certain threshold voltages, the method **#wait_for_threshold** is used.
+To wait for the value of an analog pin to cross certain threshold voltages, the method **AIN.wait_for_threshold** is used.
 
-**#wait_for_threshold** takes the following arguments.
+**AIN.wait_for_threshold** takes the following arguments.
 - pin: The symbol of the pin to monitor
 - mv_lower: The lower threshold value in millivolts
 - mv_upper: The upper threshold value in millivolts
@@ -272,7 +272,7 @@ mv_start, mv_current, state_start, state_current, count = data
 ```
 
 #### Waiting for Threshold in the Background
-To avoid blocking while waiting for a voltage threshold to be crossed, the method **#run_on_threshold** will run a callback every time the specified change is detected.  This method will spawn a new thread and wait for change in the background.  The method **#run_once_on_threshold** is a convenience method to only be triggered once.  Only one of these threads may be active per pin.
+To avoid blocking while waiting for a voltage threshold to be crossed, the method **AIN.run_on_threshold** will run a callback every time the specified change is detected.  This method will spawn a new thread and wait for change in the background.  The method **AIN.run_once_on_threshold** is a convenience method to only be triggered once.  Only one of these threads may be active per pin.
 
 This example waits for voltage change in the background and outputs information when the specified threshold is crossed.
 
@@ -316,7 +316,7 @@ This example shows how to control PWM output of a specified pin.
 ```ruby
 # Initialize pin P9_14 for PWM output
 # This pin will now output a square wave at 10Hz with a 90% duty cycle.
-p9_14 = PWM.start(:P9_14, 90, 10)
+PWM.start(:P9_14, 90, 10)
 
 # Change frequency to 20Hz.  Duty cycle remains 90%
 PWM.set_frequency(:P9_14, 20)
@@ -348,30 +348,30 @@ The beaglebone has a number of UART devices.  These operate in TTL mode at 3.3v.
 
 Please note, UART3 does not have an RX pin, and UART5 is only available if the HDMI device tree is not enabled.
 
-To initialize the UART device **UART1**, pass the symbol for that device and the speed to the **UARTDevice** constructor.
+To initialize the UART device **UART1**, pass the symbol for that device and the speed to the **UART.setup** method.
 
 ```ruby
 # Initialize the pins for device UART1 into UART mode.
-uart1 = UARTDevice.new(:UART1, 9600)
+UART.setup(:UART1, 9600)
 
 # Change the speed of a UART device by calling #set_speed
-uart1.set_speed(115200)
+UART.set_speed(:UART1, 115200)
 
 # Disable UART device
-uart1.disable
+UART.disable(:UART1)
 ```
 
 #### UART Writing
-Writing to a UART device is accomplished by calling the **#write** or **#writeln** methods
+Writing to a UART device is accomplished by calling the **UART.write** or **UART.writeln** methods
 ```ruby
 # Initialize the pins for device UART1 into UART mode.
-uart1 = UARTDevice.new(:UART1, 9600)
+UART.setup(:UART1, 9600)
 
 # Write data to a UART1
-uart1.write("DATA DATA DATA!")
+UART.write(:UART1, "DATA DATA DATA!")
 
 # Write data to UART1 followed by a line feed
-uart1.writeln("A line feed follows")
+UART.writeln(:UART1, "A line feed follows")
 ```
 
 #### UART Reading
@@ -379,16 +379,16 @@ There are many methods available for reading from UART devices.  These are block
 
 ```ruby
 # Initialize the pins for device UART1 into UART mode.
-uart1 = UARTDevice.new(:UART1, 9600)
+UART.setup(:UART1, 9600)
 
 # Read one character from UART1
-c = uart1.readchar => "X"
+c = UART.readchar(:UART1) => "X"
 
 # Read 10 characters from UART1
-str = uart1.readchars(10) => "0123456789"
+str = UART.readchars(:UART1, 10) => "0123456789"
 
 # Read a line from UART1
-line = uart1.readline => "All the text up until the linefeed"
+line = UART.readline(:UART1) => "All the text up until the linefeed"
 ```
 
 #### UART Reading and Iterating
@@ -396,16 +396,16 @@ Data read from the UART device may be iterated with the following methods.  Thes
 
 ```ruby
 # Initialize the pins for device UART1 into UART mode.
-uart1 = UARTDevice.new(:UART1, 9600)
+UART.setup(:UART1, 9600)
 
 # Run block on every character read from UART1
-uart1.each_char { |c| puts c }
+UART.each_char(:UART1) { |c| puts c }
 
 # Run block on every 5 character read from UART1
-uart1.each_char(5) { |str| puts str }
+UART.each_char(:UART1, 5) { |str| puts str }
 
 # Run block on each line read from UART1
-uart1.each_line { |line| puts line }
+UART.each_line(:UART1) { |line| puts line }
 ```
 
 #### UART Reading and Iterating in the Background
@@ -415,7 +415,7 @@ This example shows various methods of reading and processing data read from UART
 
 ```ruby
 # Initialize the pins for device UART1 into UART mode.
-uart1 = UARTDevice.new(:UART1, 9600)
+UART.setup(:UART1, 9600)
 
 # Define the callback to be run.  It takes 3 arguments
 # uart: the UART device that triggered the callback
@@ -424,48 +424,50 @@ uart1 = UARTDevice.new(:UART1, 9600)
 callback = lambda { |uart, data, count| puts "[#{uart}:#{count}] #{data}" }
 
 # Run callback for every character read
-uart1.run_on_each_char(callback)
+UART.run_on_each_char(callback, :UART1)
 
 # Run callback for every 3 characters read
-uart1.run_on_each_chars(callback, 3)
+UART.run_on_each_chars(callback, :UART1, 3)
 
 # Run callback for every line read
-uart1.run_on_each_line(callback)
+UART.run_on_each_line(callback, :UART1)
 
 # Run callback once after a character is read
-uart1.run_once_on_each_char(callback)
+UART.run_once_on_each_char(callback, :UART1)
 
 # Run callback once after 3 characters are read
-uart1.run_once_on_each_chars(callback, 3)
+UART.run_once_on_each_chars(callback, :UART1, 3)
 
 # Run callback once after reading a line
-uart1.run_once_on_each_line(callback)
+UART.run_once_on_each_line(callback, :UART1)
 
 # Stop the currently running background thread
-uart1.stop_read_wait
+UART.stop_read_wait(:UART1)
 ```
 
 ### I2C
 The beaglebone has a number of I2C devices.  These operate at 3.3v.  Do not provide more than 3.3v to the pins or risk damaging the hardware.
 
-To initialize the I2C device **I2C2**, pass the symbol for that device to the **I2CDevice** constructor.
+To initialize the I2C device **I2C2**, pass the symbol for that device to the **I2C.setup** method.
 
 ```ruby
 # Initialize I2C device I2C2
-i2c = I2CDevice.new(:I2C2)
+I2CDevice.setup(:I2C2)
 ```
 
 #### I2C Writing
-To write to an I2C device, the method **#write** is used.
+To write to an I2C device, the method **I2C.write** is used.
 
-**#write** takes the following arguments.
+**I2C.write** takes the following arguments.
+- i2c: symbol of the I2C device to write to
 - address: address of slave device
 - data: data to write
 
 #### I2C Reading
-To read from an I2C device, the method **#read** is used.
+To read from an I2C device, the method **I2C.read** is used.
 
-**#read** takes the following arguments.
+**I2C.read** takes the following arguments.
+- i2c: symbol of the I2C device to read from
 - address: address of slave device
 - bytes: bytes to read
 - register: (optional) register to start reading from
@@ -476,19 +478,19 @@ This example communicates with an [LSM303DLHC](https://www.adafruit.com/products
 
 ```ruby
 # Initialize I2C device I2C2
-i2c = I2CDevice.new(:I2C2)
+I2CDevice.setup(:I2C2)
 
 # Put compass into continuous conversation mode
-i2c.write(0x1e, [0x02, 0x00].pack("C*"))
+I2C.write(:I2C2, 0x1e, [0x02, 0x00].pack("C*"))
 
 # Enable temperatuer sensor, 15hz register update
-i2c.write(0x1e, [0x00, 0b10010000].pack("C*") )
+I2C.write(:I2C2, 0x1e, [0x00, 0b10010000].pack("C*") )
 
 # Delay for the settings to take effect
 sleep(0.1)
 
 # Read axis data.  It is made up of 3 big endian signed shorts starting at register 0x03
-raw = i2c.read(0x1e, 6, [0x03].pack("C*"))
+raw = I2C.read(:I2C2, 0x1e, 6, [0x03].pack("C*"))
 
 # Coordinates are big endian signed shorts in x,z,y order
 x,z,y = raw.unpack("s>*")
@@ -498,7 +500,7 @@ degrees = (Math::atan2(y, x) * 180) / Math::PI
 degrees += 360 if degrees < 0
 
 # Read 2 byte big endian signed short from temperature register
-raw = i2c.read(0x1e, 2, [0x31].pack("C*"))
+raw = I2C.read(:I2C2, 0x1e, 2, [0x31].pack("C*"))
 
 # Temperature is sent big endian, least significant digit last
 temp = raw.unpack("s>").first
@@ -519,13 +521,13 @@ temp = (temp * 1.8 + 32).to_i
 puts "#{Time.now.strftime("%H:%M")}  Temperature: #{temp} degrees f        Direction: #{degrees.to_i} degrees"
 
 # Disable I2C device
-i2c.disable
+I2C.disable(:I2C2)
 ```
 
 ### SPI
 The beaglebone has a number of SPI devices.  These operate at 3.3v.  Do not provide more than 3.3v to the pins or risk damaging the hardware.
 
-To initialize the SPI device **SPI0**, pass the symbol for that device to the **SPIDevice** constructor.
+To initialize the SPI device **SPI0**, pass the symbol for that device to the **SPI.setup** method.
 
 The optional arguments are also available
 - mode: SPI mode, :SPI_MODE_0 through :SPI_MODE_3
@@ -534,48 +536,49 @@ The optional arguments are also available
 
 ```ruby
 # Initialize SPI device SPI0
-spi = SPIDevice.new(:SPI0, :SPI_MODE_0, 1000000, 8)
+SPI.setup(:SPI0, :SPI_MODE_0, 1000000, 8)
 
 # You can change SPI  with the methods below.
 
 # Set mode of SPI0
-spi.set_mode(:SPI_MODE_3)
+SPI.set_mode(:SPI0, :SPI_MODE_3)
 
 # Set speed of SPI0
-spi.set_speed(100000)
+SPI.set_speed(:SPI0, 100000)
 
 # Set bits per word of SPI0
-spi.set_bpw(10)
+SPI.set_bpw(:SPI0, 10)
 
 # Disable SPI device
-spi.disable
+SPI.disable(:SPI0)
 ```
 
 #### SPI Data Transfer
-To transfer data to an SPI device, the method **#xfer** is used.
+To transfer data to an SPI device, the method **SPI.xfer** is used.
 
-**#xfer** takes the following arguments
+**SPI.xfer** takes the following arguments
+- spi: symbol for the SPI device to use
 - tx_data: data to transmit
 - readbytes: (optional) number of bytes to read, otherwise it sizeof tx_data is used
 - speed: (optional) speed of the transfer
 - delay: (optional) delay
 - bpw: (optonal) bits per word
 
-**#xfer** returns the data read from the SPI device.
+**SPI.xfer** returns the data read from the SPI device.
 
 #### MCP3008 Example
 This example communicates with an [MCP3008](http://www.adafruit.com/products/856) ADC device.
 
 ```ruby
 # Initialize SPI device SPI0
-spi = SPIDevice.new(:SPI0)
+SPIDevice.new(:SPI0)
 
 # communicate with MCP3008
 # byte 1: start bit
 # byte 2: single(1)/diff(0),3 bites for channel, null pad
 # byte 3: don't care
 # Read value from channel 0
-raw = spi.xfer([ 0b00000001, 0b10000000, 0].pack("C*"))
+raw = SPI.xfer(:SPI0, [ 0b00000001, 0b10000000, 0].pack("C*"))
 
 # Split data read into an array of characters
 data = raw.unpack("C*")
@@ -587,7 +590,7 @@ val = ((data[1] & 0b00000011) << 8 ) | data[2]
 puts "Value of channel 0: #{val}"
 
 # Read value from channel 1
-raw = spi.xfer([ 0b00000001, 0b10010000, 0].pack("C*"))
+raw = SPI.xfer(:SPI0, [ 0b00000001, 0b10010000, 0].pack("C*"))
 
 # Split data read into an array of characters
 data = raw.unpack("C*")
@@ -599,5 +602,5 @@ val = ((data[1] & 0b00000011) << 8 ) | data[2]
 puts "Value of channel 1: #{val}"
 
 # Disable SPI device
-spi.disable
+SPI.disable(:SPI0)
 ```
