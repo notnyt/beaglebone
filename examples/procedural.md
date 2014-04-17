@@ -477,6 +477,10 @@ To read from an I2C device, the method **I2C.read** is used.
 This example communicates with an [LSM303DLHC](https://www.adafruit.com/products/1120) Accelerometer/Compass/Thermometer device.
 
 ```ruby
+#!/usr/bin/env ruby
+require 'beaglebone'
+include Beaglebone
+
 # Initialize I2C device I2C2
 I2CDevice.setup(:I2C2)
 
@@ -570,6 +574,10 @@ To transfer data to an SPI device, the method **SPI.xfer** is used.
 This example communicates with an [MCP3008](http://www.adafruit.com/products/856) ADC device.
 
 ```ruby
+#!/usr/bin/env ruby
+require 'beaglebone'
+include Beaglebone
+
 # Initialize SPI device SPI0
 SPIDevice.new(:SPI0)
 
