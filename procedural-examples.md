@@ -1,5 +1,3 @@
-TODO: convert this to procedural methods.
-
 **Table of Contents**
 - [Examples (Procedural)](#examples-procedural)
   - [GPIO](#gpio)
