@@ -73,10 +73,28 @@ include Beaglebone
 ```
 
 ## Pin Reference
+The Beaglebone has two headers of IO pins.  Documentation on these pins is available [here](http://beagleboard.org/Support/bone101#headers).
 
 ### GPIO Pins
+The beaglebone has a large number of GPIO pins.  These pins function at 3.3v.  Do not provide more than 3.3v to any GPIO pin or risk damaging the hardware.
+
+Not all GPIO pins will be usable.  Currently there is a bug affecting P9_17 and P9_18.  They do not function in the latest Debian image.
+
+There are built in _capes_ that have priority over the GPIO pins unless disabled.  These are for HDMI and the onboard eMMC.  It is documented [here](http://beagleboard.org/Support/bone101#headers-black).  It is possible to disable these _capes_ if you are not using them.
+
 ### Analog Pins
+The beaglebone has 7 Analog inputs.  These pins function at 1.8v.  Do not provide more than 1.8v to any Analog pin or risk damaging the hardware.  The header has pins available to provide a 1.8v for analog devices as well as a dedicated analog ground.
+
 ### PWM Pins
+The beaglebone has 8 PWM pins.  These pins function at 3.3v.
+
+Not all 8 pins may be used at the same time. You may use the following pins.
+
+P8_13 or P8_19
+P9_14 or P9_16
+P9_21 or P9_22
+P9_28 and P9_42
+
 ### UART Pins
 ### I2C Pins
 ### SPI Pins
@@ -163,7 +181,7 @@ end
 ```
 
 #### Edge Triggers
-The Beaglebone can also monitor for changes on a GPIO pin.  This is called an edge trigger.  Since this is interrupt based on the Beaglebone, waiting for a change does not waste CPU cycles by constantly polling the pin.
+The Beaglebone can monitor for changes on a GPIO pin.  This is called an edge trigger.  Since this is interrupt based on the Beaglebone, waiting for a change does not waste CPU cycles by constantly polling the pin.
 
 The following trigger types are supported
 - Rising: Triggered when the state goes from low to high
@@ -223,7 +241,7 @@ p9_11.set_gpio_edge(:RISING)
 ```
 
 #### Shift Registers
-This library will also support writing to shift registers using GPIO pins.  Create a **ShiftRegister** object by initializing it with the latch pin, clock pin, and data pin.
+This library will support writing to shift registers using GPIO pins.  Create a **ShiftRegister** object by initializing it with the latch pin, clock pin, and data pin.
 
 This example will trigger 8 pins of a shift register.
 
@@ -604,7 +622,7 @@ The beaglebone has a number of SPI devices.  These operate at 3.3v.  Do not prov
 
 To initialize the SPI device **SPI0**, pass the symbol for that device to the **SPIDevice** constructor.
 
-The optional arguments are also available
+The optional arguments are available
 - mode: SPI mode, :SPI_MODE_0 through :SPI_MODE_3
 - speed: Speed of the SPI device
 - bpw: Bits per word
@@ -684,7 +702,7 @@ spi.disable
 ```
 
 ## Examples (Procedural)
-This library also supports procedural methods.  They are virtually identical to the Object Oriented methods, except the first argument they take is the pin.  If a callback is required, it is still passed first, before the pin.  The examples directory has sample code in both formats.
+This library supports _procedural_ methods as well as _objet oriented_ methods.  They are virtually identical to the _object oriented_ methods, except the first argument they take is the pin.  If a callback is required, it is still passed first, before the pin.  The examples directory has sample code in both formats.
 
 To see the procedural versions of the object oriented examples above, please view the file [examples/procedural.md](examples/procedural.md)
 
