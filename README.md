@@ -4,8 +4,8 @@ Documentation is in progress and will be completed shortly.
 **Table of Contents**
 - [Overview](#overview)
 - [Installation](#installation)
- - [Installing Ruby](#installing-ruby)
- - [Installing Beaglebone Gem](#installing-beaglebone-gem)
+  - [Installing Ruby](#installing-ruby)
+  - [Installing Beaglebone Gem](#installing-beaglebone-gem)
 - [Usage](#usage)
 - [Pin Reference](#pin-reference)
   - [GPIO Pins](#gpio-pins)
@@ -688,7 +688,7 @@ GPIO.pin_mode(:P9_12, :OUT)
 # To set the state of the pin
 GPIO.digital_write(:P9_12, :OUT)
 
-# Analog pins do not require setup, we can read at any time
+# Analog pins do not require setup, and can be read at any time
 AIN.read(:P9_33)
 
 # PWMPin.new becomes

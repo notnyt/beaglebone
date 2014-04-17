@@ -120,10 +120,10 @@ This example will wait for a rising edge to continue, then output the type of ed
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
-p9_11 = GPIOPin.new(:P9_11, :IN)
+GPIO.pin_mode(:P9_11, :IN)
 
 # Wait here until a rising edge is detected
-edge = p9_11.wait_for_edge(:RISING) => :RISING
+edge = GPIO.wait_for_edge(:P9_11, :RISING) => :RISING
 
 # Output the trigger type detected
 puts "Saw a #{edge} edge"
@@ -136,7 +136,7 @@ This example will detect edge triggers in the background and output information 
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
-p9_11 = GPIOPin.new(:P9_11, :IN)
+GPIO.pin_mode(:P9_11, :IN)
 
 # Define callback to run when an edge trigger is detected
 # This method takes 3 arguments.
@@ -150,19 +150,19 @@ callback = lambda { |pin,edge,count| puts "[#{count}] #{pin} #{edge}"}
 # Timeout: How long to wait for an event before terminating the thread
 # Repeats: How many times to run the event
 # By default, it will run forever every time the specified trigger is detected
-p9_11.run_on_edge(callback, :BOTH)
+GPIO.run_on_edge(callback, :P9_11, :BOTH)
 
 # This code will run immediately after the previous call, as it does not block
 sleep 10
 
 # Stop the background thread waiting for an edge trigger after 10 seconds
-p9_11.stop_edge_wait
+GPIO.stop_edge_wait(:P9_11)
 
 # This convenience method will run the callback only on the first detected change
-p9_11.run_once_on_edge(callback, :BOTH)
+GPIO.run_once_on_edge(callback, :P9_11, :BOTH)
 
 # Change the trigger detection for the specified pin
-p9_11.set_gpio_edge(:RISING)
+GPIO.set_gpio_edge(:P9_11, :RISING)
 ```
 
 #### Shift Registers
@@ -175,39 +175,33 @@ This example will trigger 8 pins of a shift register.
 # P9_12 is connected to the clock pin
 # P9_13 is connected to the data pin
 
-# Initialize shift register
-shiftreg = ShiftRegister.new(:P9_11, :P9_12, :P9_13)
+# Initialize the pins connected to shift register
+GPIO.pin_mode(:P9_11, :OUT)
+GPIO.pin_mode(:P9_12, :OUT)
+GPIO.pin_mode(:P9_13, :OUT)
 
 # Write value to shift register
-shiftreg.shift_out(0b11111111)
+GPIO.shift_out(:P9_11, :P9_12, :P9_13, 0b11111111)
 ```
-
 
 ### Analog Inputs
 The Analog pins on the Beaglebone run at **1.8v**.  Do not provide more than 1.8v to any analog pin or risk damaging the hardware.  The header has pins available to provide a 1.8v for analog devices as well as a dedicated analog ground.  Analog pins are only capable of reading input values.
 
-To initialize the pin **P9_33**, pass the symbol for that pin and the mode to the **AINPin** constructor.
-
-```ruby
-# Initialize pin P9_33 for Analog Input
-p9_33 = AINPin.new(:P9_33)
-```
+Analog pins do not require setup, and can be read at any time
 
 #### Reading
 To read the value from an analog pin, the method **#read** is used.  This will return a value between 0 and 1799.
 
 ```ruby
-# Initialize pin P9_33 for Analog Input
-p9_33 = AINPin.new(:P9_33)
-
 # Read the input value in millivolts.
-mv = p9_33.read => 1799
+mv = AIN.read(:P9_33) => 1799
 ```
 
 #### Waiting for Change
 To wait for the value of an analog pin to change by a specified voltage, the method **#wait_for_change** is used.
 
 **#wait_for_change** takes the following arguments.
+- pin: The symbol of the pin to monitor
 - mv_change: The amount of change in millivolts required before returning
 - interval: How often to poll the value of the pin in seconds
 - mv_last: (optional) The initial value to use as a point to detect change
@@ -215,11 +209,8 @@ To wait for the value of an analog pin to change by a specified voltage, the met
 This method returns an array containing the initial voltage, the last polled voltage, and the number of times the pin was polled.
 
 ```ruby
-# Initialize pin P9_33 for Analog Input
-p9_33 = AINPin.new(:P9_33)
-
 # Wait for 100mv of change on pin P9_33.  Poll 10 times a second
-mv_start, mv_current, count = p9_33.wait_for_change(100, 0.1)
+mv_start, mv_current, count = AIN.wait_for_change(:P9_33, 100, 0.1)
 ```
 
 #### Waiting for Change in the Background
@@ -228,8 +219,6 @@ To avoid blocking while waiting for voltage change, the method **#run_on_change*
 This example waits for voltage change in the background and outputs information when change is detected.
 
 ```ruby
-# Initialize pin P9_33 for Analog Input
-p9_33 = AINPin.new(:P9_33)
 
 # Define callback to run when condition is met
 # This method takes 4 arguments.
@@ -244,19 +233,20 @@ callback = lambda { |pin, mv_last, mv, count| puts "[#{count}] #{pin} #{mv_last}
 # Repeats: How many times to will run the event
 # By default, it will run forever every time the specified condition is detected
 # Detect 10mv of change polling 10 times a second.
-p9_33.run_on_change(callback, 10, 0.1)
+AIN.run_on_change(callback, :P9_33, 10, 0.1)
 
 # This code will run immediately after the previous call, as it does not block
 sleep 20
 
 # Stop the background thread after 20 seconds
-p9_33.stop_wait
+AIN.stop_wait(:P9_33)
 ```
 
 #### Waiting for Threshold
 To wait for the value of an analog pin to cross certain threshold voltages, the method **#wait_for_threshold** is used.
 
 **#wait_for_threshold** takes the following arguments.
+- pin: The symbol of the pin to monitor
 - mv_lower: The lower threshold value in millivolts
 - mv_upper: The upper threshold value in millivolts
 - mv_reset: The voltage change required to cross out of the lower or upper threshold ranges.
@@ -272,13 +262,10 @@ Three states are available.
 This method returns an array containing the initial voltage, the last polled voltage, the initial state, the last polled state, and the number of times the pin was polled.
 
 ```ruby
-# Initialize pin P9_33 for Analog Input
-p9_33 = AINPin.new(:P9_33)
-
 # Wait for the voltage on pin P9_33 to go below 200mv or above 1600mv.
 # To enter the :MID state from :HIGH or :LOW, it will have to cross the thresholds by at least 100mv.
 # Poll 10 times a second
-data = p9_33.wait_for_threshold(200, 1600, 100, 0.1) => [ 500, 150, :MID, :LOW, 53 ]
+data = AIN.wait_for_threshold(:P9_33, 200, 1600, 100, 0.1) => [ 500, 150, :MID, :LOW, 53 ]
 
 # Assign variables from array
 mv_start, mv_current, state_start, state_current, count = data
@@ -290,9 +277,6 @@ To avoid blocking while waiting for a voltage threshold to be crossed, the metho
 This example waits for voltage change in the background and outputs information when the specified threshold is crossed.
 
 ```ruby
-# Initialize pin P9_33 for Analog Input
-p9_33 = AINPin.new(:P9_33)
-
 # Define callback to run when condition is met
 # This method takes 6 arguments.
 # pin: The pin that triggered the event
@@ -313,50 +297,50 @@ callback = lambda { |pin, mv_last, mv, state_last, state, count|
 # To enter the :MID state from :HIGH or :LOW, it will have to cross the thresholds by at least 100mv.
 # Poll 10 times a second
 # Run callback when state changes
-p9_33.run_on_threshold(callback, 200, 1600, 100, 0.1)
+AIN.run_on_threshold(callback, :P9_33, 200, 1600, 100, 0.1)
 
 # This code will run immediately after the previous call, as it does not block
 sleep 20
 
 # Stop the background thread after 20 seconds
-p9_33.stop_wait
+AIN.stop_wait(:P9_33)
 ```
 
 ### PWM
 The beaglebone supports PWM (pulse width modulated) output on certain pins.  These pins output 3.3v.  The output is controlled based on frequency and duty cycle.
 
-To initialize the pin **P9_14**, pass the symbol for that pin, the duty cycle, and the frequency in Hz to the **PWMPin** constructor.
+To initialize the pin **P9_14**, pass the symbol for that pin, the duty cycle, and the frequency in Hz to the **PWM.start** method.
 
 This example shows how to control PWM output of a specified pin.
 
 ```ruby
 # Initialize pin P9_14 for PWM output
 # This pin will now output a square wave at 10Hz with a 90% duty cycle.
-p9_14 = PWMPin.new(:P9_14, 90, 10)
+p9_14 = PWM.start(:P9_14, 90, 10)
 
 # Change frequency to 20Hz.  Duty cycle remains 90%
-p9_14.set_frequency(20)
+PWM.set_frequency(:P9_14, 20)
 
 # Change the duty cycle to 50%
-p9_14.set_duty_cycle(50)
+PWM.set_duty_cycle(:P9_14, 50)
 
 # Adjust the frequency by setting the period in nanoseconds.
-p9_14.set_period_ns(31250000)
+PWM.set_period_ns(:P9_14, 31250000)
 
 # Adjust the duty cycle by setting the period in nanoseconds.
-p9_14.set_duty_cycle_ns(31250000)
+PWM.set_duty_cycle_ns(:P9_14, 31250000)
 
 # Invert the output signal
-p9_14.set_polarity(:INVERTED)
+PWM.set_polarity(:P9_14, :INVERTED)
 
 # Stop the output signal
-p9_14.stop
+PWM.stop(:P9_14)
 
 # Resume the output signal
-p9_14.run
+PWM.run(:P9_14)
 
 # Disable the output signal
-p9_14.disable_pwm_pin
+PWM.disable_pwm_pin(:P9_14)
 ```
 
 ### UART
