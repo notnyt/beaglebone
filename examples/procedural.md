@@ -96,11 +96,11 @@ end
   # Iterate over each LED
   leds.each do |ledpin|
     # Turn on the LED
-    GPIO.digital_write(ledpin, :LOW)
+    GPIO.digital_write(ledpin, :HIGH)
     # Delay 0.25 seconds
     sleep 0.25
     # Turn off the LED
-    GPIO.digital_write(ledpin, :HIGH)
+    GPIO.digital_write(ledpin, :LOW)
   end
 end
 ```
