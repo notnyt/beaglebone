@@ -1,5 +1,4 @@
 # Beaglebone Ruby Library
-Documentation is in progress and will be completed shortly.
 
 **Table of Contents**
 - [Overview](#overview)
