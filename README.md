@@ -7,7 +7,7 @@ Documentation is in progress and will be completed shortly.
   - [Installing Ruby](#installing-ruby)
   - [Installing Beaglebone Gem](#installing-beaglebone-gem)
 - [Usage](#usage)
-- [Pin Reference](#pin-reference)
+- [Pin Information](#pin-information)
   - [GPIO Pins](#gpio-pins)
   - [Analog Pins](#analog-pins)
   - [PWM Pins](#pwm-pins)
@@ -72,7 +72,7 @@ require 'beaglebone'
 include Beaglebone
 ```
 
-## Pin Reference
+## Pin Information
 The Beaglebone has two headers of IO pins.  Documentation on these pins is available [here](http://beagleboard.org/Support/bone101#headers).
 
 ### GPIO Pins
@@ -103,8 +103,10 @@ UART3 only has a TX pin available.
 UART5 TX and RX pins are unavailable by default, as the HDMI _cape_ claims those pins unless disabled.
 
 ### I2C Pins
+The beaglebone has 2 I2C devices available.  Documentation on these pins is available [here](http://beagleboard.org/Support/bone101#headers-i2c).  These pins function at 3.3v.  Do not provide more than 3.3v to any I2C pin or risk damaging the hardware.
 
 ### SPI Pins
+The beaglebone has 2 SPI devices available.  Documentation on these pins is available [here](http://beagleboard.org/Support/bone101#headers-spi).  These pins function at 3.3v.  Do not provide more than 3.3v to any SPI pin or risk damaging the hardware.
 
 ## Source Code Reference
 A full Source Code reference is available [here](http://rubydoc.info/gems/beaglebone/1.0.5/frames).
