@@ -710,7 +710,7 @@ spi.disable
 ```
 
 ## Examples (Procedural)
-This library supports _procedural_ methods as well as _objet oriented_ methods.  They are virtually identical to the _object oriented_ methods, except the first argument they take is the pin.  If a callback is required, it is still passed first, before the pin.  The examples directory has sample code in both formats.
+This library supports _procedural_ methods as well as _object oriented_ methods.  They are virtually identical to the _object oriented_ methods, except the first argument they take is the pin.  If a callback is required, it is still passed first, before the pin.  The examples directory has sample code in both formats.
 
 The procedural versions of the examples are available in the file [procedural-examples.md](procedural-examples.md).
 
