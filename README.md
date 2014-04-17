@@ -83,10 +83,10 @@ Not all GPIO pins will be usable.  Currently there is a bug affecting P9_17 and 
 There are built in _capes_ that have priority over the GPIO pins unless disabled.  These are for HDMI and the onboard eMMC.  It is documented [here](http://beagleboard.org/Support/bone101#headers-black).  It is possible to disable these _capes_ if you are not using them.
 
 ### Analog Pins
-The beaglebone has 7 Analog inputs.  These pins function at 1.8v.  Do not provide more than 1.8v to any Analog pin or risk damaging the hardware.  The header has pins available to provide a 1.8v for analog devices as well as a dedicated analog ground.
+The beaglebone has 7 Analog inputs.  Documentation on these pins is available [here](http://beagleboard.org/Support/bone101#headers-analog).  These pins function at 1.8v.  Do not provide more than 1.8v to any Analog pin or risk damaging the hardware.  The header has pins available to provide a 1.8v for analog devices as well as a dedicated analog ground.
 
 ### PWM Pins
-The beaglebone has 8 PWM pins.  These pins function at 3.3v.
+The beaglebone has 8 PWM pins.  Documentation on these pins is available [here](http://beagleboard.org/Support/bone101#headers-pwm).  These pins function at 3.3v.
 
 Not all 8 pins may be used at the same time. You may use the following pins.
 
@@ -96,7 +96,14 @@ Not all 8 pins may be used at the same time. You may use the following pins.
 - P9_28 and P9_42
 
 ### UART Pins
+The beaglebone has 5 UART devices available.  Documentation on these pins is available [here](http://beagleboard.org/Support/bone101#headers-serial).  These pins function at 3.3v.  Do not provide more than 3.3v to any UART pin or risk damaging the hardware.
+
+UART3 only has a TX pin available.
+
+UART5 TX and RX pins are unavailable by default, as the HDMI _cape_ claims those pins unless disabled.
+
 ### I2C Pins
+
 ### SPI Pins
 
 ## Source Code Reference
