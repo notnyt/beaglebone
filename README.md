@@ -74,7 +74,7 @@ include Beaglebone
 
 ## Pin Reference
 | HEADER | DEVICE | HEADER | DEVICE | HEADER | DEVICE | HEADER | DEVICE |
-|-|-|-|-|-|-|-|-|
+| - | - | - | - | - | - | - | -|
 | USR0 | GPIO53| USR1 | GPIO54| USR2 | GPIO55| USR3 | GPIO56|
 | P8_3 | GPIO38| P8_4 | GPIO39| P8_5 | GPIO34| P8_6 | GPIO35|
 | P8_7 | GPIO66| P8_8 | GPIO67| P8_9 | GPIO69| P8_10 | GPIO68|
@@ -92,7 +92,7 @@ include Beaglebone
 | P9_21 | GPIO3| P9_22 | GPIO2| P9_23 | GPIO49| P9_24 | GPIO15|
 | P9_25 | GPIO117| P9_26 | GPIO14| P9_27 | GPIO125| P9_28 | GPIO123|
 | P9_29 | GPIO121| P9_30 | GPIO122| P9_31 | GPIO120| P9_41 | GPIO20|
-| P9_42 | GPIO7 => false
+| P9_42 | GPIO7 | | | | | | | 
 
 ### GPIO Pins
 ### Analog Pins
