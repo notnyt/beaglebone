@@ -6,6 +6,7 @@
   - [Installing Ruby](#installing-ruby)
   - [Installing Beaglebone Gem](#installing-beaglebone-gem)
 - [Usage](#usage)
+  - [Ruby in Cloud9](#ruby-in-cloud9)
 - [Pin Information](#pin-information)
   - [GPIO Pins](#gpio-pins)
   - [Analog Pins](#analog-pins)
@@ -70,6 +71,9 @@ To use this gem, require it in the Ruby script.  An example follows
 require 'beaglebone'
 include Beaglebone
 ```
+
+### Ruby in Cloud9
+Cloud9 has native Ruby support.  Name your files with the extension .rb to run Ruby in Cloud9
 
 ## Pin Information
 The Beaglebone has two headers of IO pins.  Documentation on these pins is available [here](http://beagleboard.org/Support/bone101#headers).
