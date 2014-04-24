@@ -81,8 +81,6 @@ The Beaglebone has two headers of IO pins.  Documentation on these pins is avail
 ### GPIO Pins
 The beaglebone has a large number of GPIO pins.  These pins function at 3.3v.  Do not provide more than 3.3v to any GPIO pin or risk damaging the hardware.
 
-Not all GPIO pins will be usable.  Currently there is a bug affecting P9_17 and P9_18.  They do not function in the latest Debian image.
-
 There are built in _capes_ that have priority over the GPIO pins unless disabled.  These are for HDMI and the onboard eMMC.  It is documented [here](http://beagleboard.org/Support/bone101#headers-black).  It is possible to disable these _capes_ if you are not using them.
 
 ### Analog Pins

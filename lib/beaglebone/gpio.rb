@@ -40,6 +40,11 @@ module Beaglebone #:nodoc:
           Beaglebone::disable_pin(pin)
         end
 
+        #check to see if we need to load a device tree for this pin
+        if pininfo[:gpio_devicetree]
+          Beaglebone::device_tree_load(pininfo[:gpio_devicetree])
+        end
+
         #export pin unless its an on board LED, if it isn't already exported
         if pininfo[:led]
           raise StandardError, "LEDs only support OUT mode: #{pin.to_s}" unless mode == :OUT
@@ -355,6 +360,11 @@ module Beaglebone #:nodoc:
 
         #write to unexport to disable gpio
         File.open('/sys/class/gpio/unexport', 'w') { |f| f.write(pininfo[:gpio]) }
+
+        #check to see if we need to load a device tree for this pin
+        if pininfo[:gpio_devicetree]
+          Beaglebone::device_tree_unload(pininfo[:gpio_devicetree])
+        end
 
         #remove status from hash so following enabled? call checks actual system
         Beaglebone::delete_pin_status(pin)
