@@ -191,7 +191,15 @@ module Beaglebone #:nodoc:
         spi_fd = get_spi_status(spi, :fd_spi)
 
         spi_fd.ioctl(SPI_IOC_WR_MAX_SPEED_HZ, [speed].pack('L'))
-        spi_fd.ioctl(SPI_IOC_RD_MAX_SPEED_HZ, [speed].pack('L'))
+
+        # deal with old versions of ruby that can't handle large number IOCTL
+        # https://bugs.ruby-lang.org/issues/6127
+        begin
+          spi_fd.ioctl(SPI_IOC_RD_MAX_SPEED_HZ, [speed].pack('L'))
+        rescue
+          puts 'Warning, old Ruby detected, cannot set SPI max read speed'
+        end
+
         set_spi_status(spi, :speed, speed)
       end
 
@@ -204,8 +212,15 @@ module Beaglebone #:nodoc:
         raise ArgumentError, "Mode (#{mode.to_s}) is unknown" unless [SPI_MODE_0, SPI_MODE_1, SPI_MODE_2, SPI_MODE_3].include?(mode)
         spi_fd = get_spi_status(spi, :fd_spi)
 
-        spi_fd.ioctl(SPI_IOC_WR_MODE, [mode].pack('C'))
-        spi_fd.ioctl(SPI_IOC_RD_MODE, [mode].pack('C'))
+        # deal with old versions of ruby that can't handle large number IOCTL
+        # https://bugs.ruby-lang.org/issues/6127
+        begin
+          spi_fd.ioctl(SPI_IOC_WR_MODE, [mode].pack('C'))
+          spi_fd.ioctl(SPI_IOC_RD_MODE, [mode].pack('C'))
+        rescue
+          puts 'Warning, old Ruby detected, cannot set SPI mode'
+        end
+
       end
 
       # Set the bits per word of the specified SPI device
@@ -220,7 +235,15 @@ module Beaglebone #:nodoc:
         spi_fd = get_spi_status(spi, :fd_spi)
 
         spi_fd.ioctl(SPI_IOC_WR_BITS_PER_WORD, [bpw].pack('C'))
-        spi_fd.ioctl(SPI_IOC_RD_BITS_PER_WORD, [bpw].pack('C'))
+
+        # deal with old versions of ruby that can't handle large number IOCTL
+        # https://bugs.ruby-lang.org/issues/6127
+        begin
+          spi_fd.ioctl(SPI_IOC_RD_BITS_PER_WORD, [bpw].pack('C'))
+        rescue
+          puts 'Warning, old Ruby detected, cannot set SPI read bits per word'
+        end
+
         set_spi_status(spi, :bpw, bpw)
       end
 
