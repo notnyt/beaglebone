@@ -80,7 +80,7 @@ module Beaglebone #:nodoc:
         raise StandardError, "PIN not in GPIO OUT mode: #{pin}" unless get_gpio_mode(pin) == :OUT
 
         fd = get_value_fd(pin)
-        fd.write STATES[state.to_sym.upcase].to_s
+        fd.write STATES[state.to_sym].to_s
         fd.flush
         Beaglebone::set_pin_status(pin, :state, state)
       end
@@ -175,7 +175,7 @@ module Beaglebone #:nodoc:
       #   wait_for_edge(:P9_11, :RISING, 30) => :RISING
       def wait_for_edge(pin, edge, timeout = nil, disable=true)
         check_valid_edge(edge)
-        raise ArgumentError, "Cannot wait for edge trigger NONE: #{pin}" if edge.to_sym.upcase == :NONE
+        raise ArgumentError, "Cannot wait for edge trigger NONE: #{pin}" if edge.to_sym == :NONE
 
         check_gpio_enabled(pin)
         raise StandardError, "PIN not in GPIO IN mode: #{pin}" unless get_gpio_mode(pin) == :IN
@@ -390,8 +390,6 @@ module Beaglebone #:nodoc:
       #check if pin is valid to use as gpio pin
       def valid?(pin)
         #check to see if pin exists
-        pin = pin.to_sym.upcase
-
         return false unless PINS[pin]
         return false unless PINS[pin][:gpio]
 
@@ -454,14 +452,14 @@ module Beaglebone #:nodoc:
       #ensure state is valid
       def check_valid_state(state)
         #check to see if mode is valid
-        state = state.to_sym.upcase
+        state = state.to_sym
         raise ArgumentError, "No such state: #{state.to_s}" unless STATES.include?(state)
       end
 
       #ensure mode is valid
       def check_valid_mode(mode)
         #check to see if mode is valid
-        mode = mode.to_sym.upcase
+        mode = mode.to_sym
         raise ArgumentError, "No such mode: #{mode.to_s}" unless MODES.include?(mode)
       end
 

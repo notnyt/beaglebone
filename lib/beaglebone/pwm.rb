@@ -309,7 +309,7 @@ module Beaglebone #:nodoc:
       #ensure pin is valid pwm pin
       def valid?(pin)
         #check to see if pin exists
-        pin = pin.to_sym.upcase
+        pin = pin.to_sym
 
         return false unless PINS[pin]
         return false unless PINS[pin][:pwm]
@@ -388,7 +388,7 @@ module Beaglebone #:nodoc:
       #ensure polarity is valid
       def check_valid_polarity(polarity)
         #check to see if mode is valid
-        polarity = polarity.to_sym.upcase
+        polarity = polarity.to_sym
         raise ArgumentError, "No such polarity: #{polarity.to_s}" unless POLARITIES.include?(polarity)
       end
 

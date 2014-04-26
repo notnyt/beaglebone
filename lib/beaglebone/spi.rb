@@ -278,7 +278,7 @@ module Beaglebone #:nodoc:
       #ensure spi is valid
       def check_spi_valid(spi)
         raise ArgumentError, "Invalid spi Specified #{spi.to_s}" unless SPIS[spi] && SPIS[spi][:sclk]
-        spiinfo = SPIS[spi.to_sym.upcase]
+        spiinfo = SPIS[spi.to_sym]
 
         unless spiinfo[:sclk] && [nil,:spi].include?(Beaglebone::get_pin_status(spiinfo[:sclk], :type))
           raise StandardError, "SCLK Pin for #{spi.to_s} in use"

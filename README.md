@@ -416,8 +416,8 @@ This example shows how to control PWM output of a specified pin.
 
 ```ruby
 # Initialize pin P9_14 for PWM output
-# This pin will now output a square wave at 10Hz with a 90% duty cycle.
-p9_14 = PWMPin.new(:P9_14, 90, 10)
+# This pin will now output a square wave at 10Hz with a 90% duty cycle, non-inverted.
+p9_14 = PWMPin.new(:P9_14, 90, 10, :NORMAL)
 
 # Change frequency to 20Hz.  Duty cycle remains 90%
 p9_14.set_frequency(20)
@@ -476,7 +476,7 @@ uart1.writeln("A line feed follows")
 ```
 
 #### UART Reading
-There are many methods available for reading from UART devices.  These are blocking methods and will not return until the requested is available.
+There are many methods available for reading from UART devices.  These are blocking methods and will not return until the requested data is available.
 
 ```ruby
 # Initialize the pins for device UART1 into UART mode.

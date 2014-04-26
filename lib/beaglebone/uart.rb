@@ -390,7 +390,7 @@ module Beaglebone #:nodoc:
       # ensure UART is valid
       def check_uart_valid(uart)
         raise ArgumentError, "Invalid UART Specified #{uart.to_s}" unless UARTS[uart]
-        uartinfo = UARTS[uart.to_sym.upcase]
+        uartinfo = UARTS[uart.to_sym]
 
         unless uartinfo[:tx] && [nil,:uart].include?(Beaglebone::get_pin_status(uartinfo[:tx], :type))
           raise StandardError, "TX Pin for #{uart.to_s} in use"

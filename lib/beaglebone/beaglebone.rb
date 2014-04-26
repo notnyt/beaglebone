@@ -226,7 +226,6 @@ module Beaglebone
     # check if a pin of given type is valid
     def check_valid_pin(pin, type = nil)
       #check to see if pin exists
-      pin = pin.to_sym.upcase
       raise ArgumentError, "No such PIN: #{pin.to_s}" unless PINS[pin]
 
       if type
@@ -256,7 +255,7 @@ module Beaglebone
       File.open("#{get_capemgr_dir}/slots", 'w') { |f| f.write(name) }
 
       raise StandardError, "Unable to load device tree: #{name}" unless device_tree_loaded?(name)
-      sleep(0.25)
+      sleep(0.4)
       true
     end
 

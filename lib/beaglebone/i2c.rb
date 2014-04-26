@@ -144,7 +144,7 @@ module Beaglebone #:nodoc:
       # ensure valid i2c device
       def check_i2c_valid(i2c)
         raise ArgumentError, "Invalid i2c Specified #{i2c.to_s}" unless I2CS[i2c] && I2CS[i2c][:sda]
-        i2cinfo = I2CS[i2c.to_sym.upcase]
+        i2cinfo = I2CS[i2c.to_sym]
 
         unless i2cinfo[:scl] && [nil,:i2c].include?(Beaglebone::get_pin_status(i2cinfo[:scl], :type))
           raise StandardError, "SCL Pin for #{i2c.to_s} in use"
