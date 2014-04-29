@@ -49,7 +49,6 @@ module Beaglebone #:nodoc:
         Beaglebone::set_pin_status(pin, :fd_polarity, polarity_fd)
         Beaglebone::set_pin_status(pin, :fd_run, run_fd)
 
-
         read_period_value(pin)
         read_duty_value(pin)
         read_polarity_value(pin)
@@ -163,13 +162,14 @@ module Beaglebone #:nodoc:
 
         period = newperiod || Beaglebone::get_pin_status(pin, :period)
 
-        value = ((duty * period) / 100).to_i
+        value = ((duty * period) / 100.0).round
 
         fd.write(value.to_s)
         fd.flush
 
         raise StandardError, "Could not set duty cycle: #{pin} (#{value})" unless read_duty_value(pin) == value
 
+        Beaglebone::set_pin_status(pin, :duty_pct, duty)
         value
 
       end
@@ -201,7 +201,8 @@ module Beaglebone #:nodoc:
         fd.write(value.to_s)
         fd.flush
 
-        raise StandardError, "Could not set duty cycle: #{pin} (#{value})" unless read_duty_value(pin) == value
+        #since we're setting the duty_ns, we want to update the duty_pct value as well here.
+        raise StandardError, "Could not set duty cycle: #{pin} (#{value})" unless read_duty_value(pin, true) == value
 
         value
       end
@@ -223,7 +224,7 @@ module Beaglebone #:nodoc:
         duty_ns = Beaglebone::get_pin_status(pin, :duty)
         duty_pct = Beaglebone::get_pin_status(pin, :duty_pct)
 
-        value = (1000000000 / frequency).to_i
+        value = (1000000000 / frequency).round
 
         #we can't set the frequency lower than the previous duty cycle
         #adjust if necessary
@@ -348,7 +349,7 @@ module Beaglebone #:nodoc:
       end
 
       #read duty file
-      def read_duty_value(pin)
+      def read_duty_value(pin, setpct=false)
         check_pwm_enabled(pin)
 
         fd = Beaglebone::get_pin_status(pin, :fd_duty)
@@ -358,7 +359,11 @@ module Beaglebone #:nodoc:
         value = fd.read.strip.to_i
 
         Beaglebone::set_pin_status(pin, :duty, value)
-        Beaglebone::set_pin_status(pin, :duty_pct, ((value * 100) / Beaglebone::get_pin_status(pin, :period).to_i))
+        # only set duty_pct if it is unset or if we are forcing it.
+        if setpct || Beaglebone::get_pin_status(pin, :duty_pct).nil?
+          duty_pct = ((value * 100.0) / Beaglebone::get_pin_status(pin, :period)).round
+          Beaglebone::set_pin_status(pin, :duty_pct, duty_pct)
+        end
 
         value
       end
@@ -374,7 +379,6 @@ module Beaglebone #:nodoc:
         value = fd.read.strip.to_i
 
         Beaglebone::set_pin_status(pin, :period, value)
-        Beaglebone::set_pin_status(pin, :duty_pct, ((Beaglebone::get_pin_status(pin, :duty).to_i * 100) / value).to_i)
 
         value
       end
