@@ -571,7 +571,7 @@ module Beaglebone #:nodoc:
         dtb_fn = "#{filename}.dtbo"
 
         # if we've already built this file, we don't need to do it again
-        return if File.exists?(dtb_fn) && !force
+        return pin_data if File.exists?(dtb_fn) && !force
 
         dts_file = File.open(dts_fn, 'w')
         dts_file.write(dts)
