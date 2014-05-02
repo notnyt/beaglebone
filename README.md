@@ -5,6 +5,7 @@
 - [Installation](#installation)
   - [Installing Ruby](#installing-ruby)
   - [Installing Beaglebone Gem](#installing-beaglebone-gem)
+  - [Updating Beaglebone Gem](#updating-beaglebone-gem)
 - [Usage](#usage)
   - [Ruby in Cloud9](#ruby-in-cloud9)
 - [Pin Information](#pin-information)
@@ -58,6 +59,13 @@ sudo apt-get install ruby
 
 ### Installing Beaglebone Gem
 Once Ruby is installed installed, install the gem by running the command below.
+
+```
+sudo gem install beaglebone
+```
+
+### Updating Beaglebone Gem
+Once the gem is installed, you can update to the latest version by running the command below.  New versions may contain bug fixes and new features.
 
 ```
 sudo gem install beaglebone
