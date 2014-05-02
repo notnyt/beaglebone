@@ -68,7 +68,7 @@ sudo gem install beaglebone
 Once the gem is installed, you can update to the latest version by running the command below.  New versions may contain bug fixes and new features.
 
 ```
-sudo gem install beaglebone
+sudo gem update beaglebone
 ```
 
 ## Usage
