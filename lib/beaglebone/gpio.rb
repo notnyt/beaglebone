@@ -15,16 +15,59 @@ module Beaglebone #:nodoc:
       STATES = { :HIGH => 1, :LOW => 0 }
       # Edge trigger options
       EDGES = [ :NONE, :RISING, :FALLING, :BOTH ]
+      # Slew rates
+      SLEWRATES = [ :SLOW, :FAST ]
+      # pull modes
+      PULLMODES = [ :PULLUP, :PULLDOWN, :NONE ]
 
+      # dts template for GPIO pin
+      GPIOTEMPLATE = '/*
+ * This is a template-generated file
+ */
+
+/dts-v1/;
+/plugin/;
+
+/{
+    compatible = "ti,beaglebone", "ti,beaglebone-black";
+    part_number = "BS_PINMODE_!PIN_KEY!_!DATA!";
+
+    exclusive-use =
+        "!PIN_DOT_KEY!",
+        "!PIN_FUNCTION!";
+
+    fragment@0 {
+        target = <&am33xx_pinmux>;
+        __overlay__ {
+            bs_pinmode_!PIN_KEY!_!DATA!: pinmux_bs_pinmode_!PIN_KEY!_!DATA! {
+                pinctrl-single,pins = <!PIN_OFFSET! !DATA!>;
+            };
+        };
+    };
+
+    fragment@1 {
+        target = <&ocp>;
+        __overlay__ {
+            bs_pinmode_!PIN_KEY!_!DATA!_pinmux {
+                compatible = "bone-pinmux-helper";
+                status = "okay";
+                pinctrl-names = "default";
+                pinctrl-0 = <&bs_pinmode_!PIN_KEY!_!DATA!>;
+            };
+        };
+    };
+};
+'
       # Initialize a GPIO pin
       #
       # @param pin should be a symbol representing the header pin
       # @param mode should specify the mode of the pin, either :IN or :OUT
-      #
+      # @param pullmode (optional) should specify the pull mode, :PULLUP, :PULLDOWN, or :NONE
+      # @param slewrate (optional) should specify the slew rate, :FAST or :SLOW
       # @example
       #   GPIO.pin_mode(:P9_12, :OUT)
-      #   GPIO.pin_mode(:P9_11, :IN)
-      def pin_mode(pin, mode)
+      #   GPIO.pin_mode(:P9_11, :IN, :PULLUP, :FAST)
+      def pin_mode(pin, mode, pullmode = nil, slewrate = nil)
 
         #make sure a valid mode was passed
         check_valid_mode(mode)
@@ -40,9 +83,14 @@ module Beaglebone #:nodoc:
           Beaglebone::disable_pin(pin)
         end
 
-        #check to see if we need to load a device tree for this pin
-        if pininfo[:gpio_devicetree]
-          Beaglebone::device_tree_load(pininfo[:gpio_devicetree])
+        pullmode = pullmode || :PULLUP
+        slewrate = slewrate || :FAST
+
+        raise ArgumentError, "Invalid Slew Rate (#{slewrate}) specified on: #{pin}" unless SLEWRATES.include?(slewrate)
+        raise ArgumentError, "Invalid Pull Mode (#{pullmode}) specified on: #{pin}" unless PULLMODES.include?(pullmode)
+
+        if mode == :IN and pullmode != :PULLUP and ( pininfo[:mmc] or pin == :P9_15 )
+          raise ArgumentError, "Invalid Pull mode specified for pin: #{pin} (#{pullmode})"
         end
 
         #export pin unless its an on board LED, if it isn't already exported
@@ -50,9 +98,26 @@ module Beaglebone #:nodoc:
           raise StandardError, "LEDs only support OUT mode: #{pin.to_s}" unless mode == :OUT
           File.open("#{gpio_directory(pin)}/trigger", 'w') { |f| f.write('gpio') }
         else
+          # if pin is not an onboard LED
+
+          # create device tree overlay for this pin, do not force rebuild
+          pin_data = create_device_tree(pin, mode, pullmode, slewrate, false)
+
+          # unload previous dtb if loaded
+          begin
+            Beaglebone::device_tree_unload("#{TREES[:GPIO][:pin]}#{pin}_.*")
+          rescue
+            #
+          end
+
+          # load device tree overlay
+          Beaglebone::device_tree_load("#{TREES[:GPIO][:pin]}#{pin}_0x#{pin_data.to_s(16)}")
+
+          # export gpio pin
           File.open('/sys/class/gpio/export', 'w') { |f| f.write pininfo[:gpio] }
           #check to see if pin is GPIO enabled in /sys/class/gpio/
           raise StandardError, "GPIO was unable to initalize pin: #{pin.to_s}" unless enabled?(pin)
+
         end unless Beaglebone::get_pin_status(pin, :type) == :gpio
 
         #set pin mode
@@ -361,10 +426,8 @@ module Beaglebone #:nodoc:
         #write to unexport to disable gpio
         File.open('/sys/class/gpio/unexport', 'w') { |f| f.write(pininfo[:gpio]) }
 
-        #check to see if we need to load a device tree for this pin
-        if pininfo[:gpio_devicetree]
-          Beaglebone::device_tree_unload(pininfo[:gpio_devicetree])
-        end
+        #unload device tree
+        Beaglebone::device_tree_unload("#{TREES[:GPIO][:pin]}#{pin}_.*") unless pininfo[:led]
 
         #remove status from hash so following enabled? call checks actual system
         Beaglebone::delete_pin_status(pin)
@@ -469,6 +532,55 @@ module Beaglebone #:nodoc:
         raise StandardError, "PIN not GPIO enabled: #{pin}" unless enabled?(pin)
       end
 
+      def create_device_tree(pin, mode, pullmode, slewrate, force = false)
+        #get info from PINS hash
+        pininfo = PINS[pin]
+
+        #generate data value for dts
+        #Bit 15 PIN USAGE is an indicator and should be a 1 if the pin is used or 0 if it is unused.
+        # Bits 14-7 RESERVED is not to be used and left as 0.
+        # Bit 6 SLEW CONTROL 0=Fast 1=Slow
+        # Bit 5 RX Enabled 0=Disabled 1=Enabled
+        # Bit 4 PU/PD 0=Pulldown 1=Pullup.
+        # Bit 3 PULLUP/DN 0=Pullup/pulldown enabled 1= Pullup/pulldown disabled
+        # Bit 2-0 MUX MODE SELECT Mode 0-7. (refer to TRM)
+        pin_data = 0
+        pin_data |= 0b1000000 if slewrate == :SLOW
+        pin_data |= 0b100000 if mode == :IN
+        case pullmode
+          when :PULLUP
+            pin_data |= 0b10000
+          when :NONE
+            pin_data |= 0b1000
+          else
+            # default is pulldown enabled
+        end
+        #set mux mode, 7 is gpio
+        pin_data |= 7
+
+        dts = GPIOTEMPLATE.clone
+
+        dts.gsub!('!PIN_KEY!', pin.to_s)
+        dts.gsub!('!PIN_DOT_KEY!', pin.to_s.gsub('_', '.'))
+        dts.gsub!('!PIN_FUNCTION!', pininfo[:gpiofunc])
+        dts.gsub!('!PIN_OFFSET!', pininfo[:muxoffset])
+        dts.gsub!('!DATA!', "0x#{pin_data.to_s(16)}")
+
+        filename = "/lib/firmware/#{TREES[:GPIO][:pin]}#{pin}_0x#{pin_data.to_s(16)}-00A0"
+        dts_fn = "#{filename}.dts"
+        dtb_fn = "#{filename}.dtbo"
+
+        # if we've already built this file, we don't need to do it again
+        return if File.exists?(dtb_fn) && !force
+
+        dts_file = File.open(dts_fn, 'w')
+        dts_file.write(dts)
+        dts_file.close
+
+        system("dtc -O dtb -o #{dtb_fn} -b 0 -@ #{dts_fn}")
+
+        pin_data
+      end
     end
   end
 
@@ -480,16 +592,18 @@ module Beaglebone #:nodoc:
     # Return's a GPIOPin object, setting the pin mode on initialization
     #
     # @param mode should specify the mode of the pin, either :IN or :OUT
+    # @param pullmode (optional) should specify the pull mode, :PULLUP, :PULLDOWN, or :NONE
+    # @param slewrate (optional) should specify the slew rate, :FAST or :SLOW
     #
     # @return [GPIOPin]
     #
     # @example
     #   p9_12 = GPIOPin.new(:P9_12, :OUT)
     #   p9_11 = GPIOPin.new(:P9_11, :IN)
-    def initialize(pin, mode)
+    def initialize(pin, mode, pullmode = nil, slewrate = nil)
       @pin = pin
 
-      GPIO::pin_mode(@pin, mode)
+      GPIO::pin_mode(@pin, mode, pullmode, slewrate)
     end
 
     # Sets a pin's output state

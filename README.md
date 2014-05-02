@@ -120,11 +120,20 @@ The GPIO pins on the Beaglebone run at **3.3v**.  Do not provide more than 3.3v 
 
 GPIO pins have two modes, input and output.  These modes are represented by the symbols **:IN** and **:OUT**.
 
+GPIO pins have internal pullup and pulldown resistors.  These modes are represented by the symbols **:PULLUP**, **:PULLDOWN**, and **:NONE**.
+
+GPIO pins have an adjustable slew rate.  These modes are represented by the symbols **:FAST** and **:SLOW**
+
 To initialize the pin **P9_11**, pass the symbol for that pin and the mode to the **GPIOPin** constructor.
 
 ```ruby
 # Initialize pin P9_11 in INPUT mode
-p9_11 = GPIOPin.new(:P9_11, :IN)
+# This method takes 4 arguments
+# pin: The pin to initialize
+# mode: The GPIO mode, :IN or :OUT
+# pullmode: (optional) The pull mode, :PULLUP, :PULLDOWN, or :NONE
+# slewrate: (optional) The slew rate, :FAST or :SLOW
+p9_11 = GPIOPin.new(:P9_11, :IN, :PULLUP, :FAST)
 
 # Initialize pin P9_12 in OUTPUT mode
 p9_12 = GPIOPin.new(:P9_12, :OUT)
