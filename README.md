@@ -54,7 +54,7 @@ The purpose of this library is to provide easy access to all of the IO features 
 Ruby and Rubygems are required to use this gem.  To install, simply run the command below.  This will install Ruby 1.9.3 which includes Rubygems.
 
 ```
-sudo apt-get install ruby
+sudo apt-get install ruby 
 ```
 
 ### Installing Beaglebone Gem
