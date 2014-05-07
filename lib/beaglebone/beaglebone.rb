@@ -245,7 +245,7 @@ module Beaglebone
     end
 
     # load a device tree
-    def device_tree_load(name)
+    def device_tree_load(name, delay=0.25)
       return true if loaded_dtbs.include?(name)
 
       if device_tree_loaded?(name)
@@ -254,7 +254,7 @@ module Beaglebone
       end
 
       File.open("#{get_capemgr_dir}/slots", 'w') { |f| f.write(name) }
-      sleep(0.25)
+      sleep delay
       raise StandardError, "Unable to load device tree: #{name}" unless device_tree_loaded?(name)
       true
     end

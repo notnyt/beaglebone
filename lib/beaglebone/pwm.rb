@@ -35,7 +35,7 @@ module Beaglebone #:nodoc:
 
         #load device tree for pin if not already loaded
         unless Beaglebone::get_pin_status(pin, :type) == :pwm
-          Beaglebone::device_tree_load("#{TREES[:PWM][:pin]}#{pin}")
+          Beaglebone::device_tree_load("#{TREES[:PWM][:pin]}#{pin}", 0.5)
           Beaglebone::set_pin_status(pin, :type, :pwm)
         end
 
