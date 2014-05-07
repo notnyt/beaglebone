@@ -51,7 +51,7 @@ The purpose of this library is to provide easy access to all of the IO features 
 
 ## Installation
 ### Installing Ruby
-Ruby and Rubygems are required to use this gem.  To install, simply run the command below.  This will install Ruby 1.9.1 which includes Rubygems.
+Ruby and Rubygems are required to use this gem.  To install, simply run the command below.  This will install Ruby 1.9.3 which includes Rubygems.
 
 ```
 sudo apt-get install ruby
