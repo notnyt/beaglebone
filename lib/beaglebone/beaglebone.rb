@@ -88,7 +88,6 @@ module Beaglebone
       :P9_14 => { :gpio => 50, :gpiofunc => 'gpio1_18', :muxoffset => '0x048', :pwm => 'pwm_1a', :pwm_id => 1, :pwm_mux => 6 },
       :P9_15 => { :gpio => 48, :gpiofunc => 'gpio1_16', :muxoffset => '0x040' },
       :P9_16 => { :gpio => 51, :gpiofunc => 'gpio1_19', :muxoffset => '0x04c', :pwm => 'pwm_1b', :pwm_id => 1, :pwm_mux => 6 },
-      # these gpio values for P9_17 and P9_18 are swapped due to http://bugs.elinux.org/issues/81
       :P9_17 => { :gpio => 5, :gpiofunc => 'gpio0_5', :muxoffset => '0x15c', :i2c => 'i2c1_scl', :i2c_id => 1, :spi => 'spi0_cs0', :spi_id => 0 },
       :P9_18 => { :gpio => 4, :gpiofunc => 'gpio0_4', :muxoffset => '0x158', :i2c => 'i2c1_sda', :i2c_id => 1, :spi => 'spi0_d1', :spi_id => 0 },
       :P9_19 => { :i2c => 'i2c2_scl', :i2c_id => 2, :uart => 'uart1_rtsn', :uart_id => 1, :spi => 'spi1_cs1', :spi_id => 1 },
