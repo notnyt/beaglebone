@@ -299,12 +299,12 @@ module Beaglebone #:nodoc:
       # @example
       #   GPIO.shift_out(:P9_11, :P9_12, :P9_13, 255)
       def shift_out(latch_pin, clock_pin, data_pin, data, lsb=nil)
-        raise ArgumentError, "data must be > 0 (#{date}" if data < 0
+        raise ArgumentError, "data must be > 0 (#{data})" if data < 0
         digital_write(latch_pin, :LOW)
 
         binary = data.to_s(2)
-        pad = 8 - (binary.size % 8 )
-        binary = ('0' * pad) + binary
+        pad = 8 - ( binary.size % 8 )
+        binary = ( '0' * pad ) + binary if pad.between?(1,7)
 
         binary.reverse! if lsb
 
