@@ -304,7 +304,7 @@ module Beaglebone #:nodoc:
 
         binary = data.to_s(2)
         pad = 8 - (binary.size % 8 )
-        binary = (' ' * pad) + binary
+        binary = ('0' * pad) + binary
 
         binary.reverse! if lsb
 
