@@ -114,7 +114,12 @@ module Beaglebone #:nodoc:
           Beaglebone::device_tree_load("#{TREES[:GPIO][:pin]}#{pin}_0x#{pin_data.to_s(16)}")
 
           # export gpio pin
-          File.open('/sys/class/gpio/export', 'w') { |f| f.write pininfo[:gpio] }
+          begin
+            File.open('/sys/class/gpio/export', 'w') { |f| f.write pininfo[:gpio] }
+          rescue
+            #
+          end
+
           #check to see if pin is GPIO enabled in /sys/class/gpio/
           raise StandardError, "GPIO was unable to initalize pin: #{pin.to_s}" unless enabled?(pin)
 
@@ -424,7 +429,11 @@ module Beaglebone #:nodoc:
         stop_edge_wait(pin)
 
         #write to unexport to disable gpio
-        File.open('/sys/class/gpio/unexport', 'w') { |f| f.write(pininfo[:gpio]) }
+        begin
+          File.open('/sys/class/gpio/unexport', 'w') { |f| f.write(pininfo[:gpio]) }
+        rescue
+          #
+        end
 
         #unload device tree
         Beaglebone::device_tree_unload("#{TREES[:GPIO][:pin]}#{pin}_.*") unless pininfo[:led]
