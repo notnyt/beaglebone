@@ -30,12 +30,12 @@ module Beaglebone #:nodoc:
     SPI_MODE_2 = (SPI_CPOL|0)
     SPI_MODE_3 = (SPI_CPOL|SPI_CPHA)
 
-		SPI_MODES = {
-			:SPI_MODE_0 => SPI_MODE_0,
-			:SPI_MODE_1 => SPI_MODE_1,
-			:SPI_MODE_2 => SPI_MODE_2,
-			:SPI_MODE_3 => SPI_MODE_3,
-		}
+    SPI_MODES = {
+      :SPI_MODE_0 => SPI_MODE_0,
+      :SPI_MODE_1 => SPI_MODE_1,
+      :SPI_MODE_2 => SPI_MODE_2,
+      :SPI_MODE_3 => SPI_MODE_3,
+    }
 
     SPI_CS_HIGH   = 0x04
     SPI_LSB_FIRST = 0x08
@@ -217,8 +217,8 @@ module Beaglebone #:nodoc:
       def set_mode(spi, mode)
         check_spi_enabled(spi)
 
-				#if mode is a symbol, translate it to the appropriate value
-				mode = SPI_MODES[mode] if mode.class == Symbol && SPI_MODES[mode]
+        #if mode is a symbol, translate it to the appropriate value
+        mode = SPI_MODES[mode] if mode.class == Symbol && SPI_MODES[mode]
 
         raise ArgumentError, "Mode (#{mode.to_s}) is unknown" unless SPI_MODES.values.include?(mode)
         spi_fd = get_spi_status(spi, :fd_spi)
