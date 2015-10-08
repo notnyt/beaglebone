@@ -235,7 +235,7 @@ module Beaglebone
 
     # return capemgr directory
     def get_capemgr_dir
-      Dir.glob('/sys/devices/bone_capemgr.*').first
+      Dir.glob([ '/sys/devices/bone_capemgr.*', '/sys/devices/platform/bone_capemgr' ]).first
     end
 
     # check if device tree is loaded
